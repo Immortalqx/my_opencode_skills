@@ -2,7 +2,6 @@
 name: proof-writer
 description: Write rigorous mathematical proofs for ML/AI theory. Use when the user wants to prove a theorem, lemma, proposition, or corollary, fill in missing proof steps, formalize a proof sketch (\u8865\u5168\u8bc1\u660e, \u5199\u8bc1\u660e, \u8bc1\u660e\u67d0\u4e2a\u547d\u9898), or determine whether a claimed proof can actually be completed under the stated assumptions.
 argument-hint: <theorem-statement-or-draft>
-disable-model-invocation: true
 ---
 
 # Proof Write: Rigorous Theorem / Lemma Drafting

@@ -2,7 +2,6 @@
 name: drawio-diagram
 description: Use when creating research figures, paper posters, academic presentation visuals, or conceptual diagrams as an editable draw.io/diagrams.net draft plus PNG/SVG/PDF exports that pass strict visual QA. Especially for paper figures or posters where the user wants the agent to read source materials, reuse extracted paper images or plots, and produce editable draw.io/SVG/PDF assets that the user can keep editing directly in draw.io.
 argument-hint: <task-or-drawio-path>
-disable-model-invocation: true
 allowed-tools: Bash(python *) Bash(powershell *) Read Write Edit Glob
 ---
 

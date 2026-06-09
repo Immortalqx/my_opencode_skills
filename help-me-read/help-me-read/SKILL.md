@@ -2,7 +2,6 @@
 name: help-me-read
 description: Deep-read a single user-provided PDF (lecture slides or academic paper) and produce a story-driven close-read note in the user's working language. Use when the user asks for a close-read, detailed study notes, tutor-style breakdown, deep study notes, open-book review, 精读, 深入解析, or hands over a PDF plus a target output path.
 argument-hint: <pdf-path> [output-path] [language]
-disable-model-invocation: true
 allowed-tools: Read Write Edit Glob WebSearch WebFetch Bash
 when_to_use: The skill reads every page, captures full-page screenshots of slides and region screenshots of paper figures, runs divergent web searches to fill in background that is not in the PDF, uses available image-understanding tools for non-OCR figure analysis, and writes a new note file with a single unified narrative metaphor, motivation-problem-solution-why sections per topic, key term glosses, and source links. The skill never overwrites an existing note and writes per-note assets in a sibling folder.
 ---

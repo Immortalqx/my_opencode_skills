@@ -2,7 +2,6 @@
 name: mock-review
 description: Mock peer-review workflow for manuscript authors preparing conference or journal submissions. Use when the user asks in English or Chinese for mock review, simulated review, rebuttal preparation, reviewer-style critique, or wants a manuscript reviewed against a named venue or journal (ACM MM, NeurIPS, CVPR, ICLR, ICCV, IEEE, etc.) or a user-provided review template.
 argument-hint: <venue-or-journal> [manuscript-pdf]
-disable-model-invocation: true
 allowed-tools: Bash(python *) WebSearch WebFetch Read Write Edit Glob
 when_to_use: The skill researches official review requirements, optionally extracts user-provided review templates in PDF/Markdown/image/text form, scans PDFs for manuscript artifact risks, studies related literature and experimental baselines, and writes a simulated review for author preparation. The output must be labeled as a mock or simulated review and must not replace real peer review or impersonate an official reviewer.
 ---

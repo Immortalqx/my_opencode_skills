@@ -2,7 +2,6 @@
 name: research-survey-loop
 description: Long-running survey workflow for robotics, embodied AI, computer vision, world models, navigation, manipulation, 3D scene understanding, and adjacent research. Use when the user wants to create or continue a multi-round literature review task on one of these topics.
 argument-hint: <topic-or-task-dir>
-disable-model-invocation: true
 allowed-tools: Bash(python3 *) Read Write Edit Glob WebSearch WebFetch
 when_to_use: The skill maintains stable task documents (`task.md`, `round_log.md`, `current_task.md`, `survey.md`), searches Nature/Science plus top CV and robotics venues before arXiv, migrates relevant local PDFs from `papers/` into task-local `sources/`, reads PDFs in chunks of at most 10 pages, and incrementally writes a Chinese Markdown survey with relative local citations or web links.
 ---
