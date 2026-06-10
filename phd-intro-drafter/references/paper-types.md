@@ -61,7 +61,7 @@ Ask the following in order. The first yes determines the type.
 
 1. Does the paper define a problem or setting the community has not studied? If yes, New Problem/Setting.
 2. Is the paper's main contribution a new method on an existing benchmark? If yes, Technique.
-3. Is the paper's main contribution a new benchmark? If yes, use `benchmark-paper-template` (separate plugin) instead.
+3. Is the paper's main contribution a new benchmark? If yes, use `phd-benchmark-paper-template` (separate plugin) instead.
 4. Does the paper propose a method that is also a problem reformulation? See Mixed cases below.
 
 ## 5. Worked examples

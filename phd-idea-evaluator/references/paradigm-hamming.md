@@ -61,11 +61,11 @@ The list should feel alive. A list that has not changed in two years is either r
 
 ## 5. Sustained-problem selection
 
-A crucial rule: do not only work on problems the researcher knows how to solve. Those problems produce incremental papers (which are valuable, see `references/five-dimensions.md` in the `idea-evaluator` skill) but they will not produce landmark work.
+A crucial rule: do not only work on problems the researcher knows how to solve. Those problems produce incremental papers (which are valuable, see `references/five-dimensions.md` in the `phd-idea-evaluator` skill) but they will not produce landmark work.
 
 Reserve 10-20 percent of research time for a top-five problem the researcher does not know how to solve. Most attempts will fail visibly. Some will make partial progress. One in 10 might crack open and define the researcher's career.
 
-Avoid the opposite failure mode: spending 100 percent of time on unsolvable top-10 problems with no incremental output. That produces an unpublishable PhD. The balance is roughly 70-20-10 between incremental, broader, and disruptive work (see the portfolio section of `idea-evaluator`'s `paradigm-shift-probe.md`).
+Avoid the opposite failure mode: spending 100 percent of time on unsolvable top-10 problems with no incremental output. That produces an unpublishable PhD. The balance is roughly 70-20-10 between incremental, broader, and disruptive work (see the portfolio section of `phd-idea-evaluator`'s `paradigm-shift-probe.md`).
 
 ## 6. The template
 

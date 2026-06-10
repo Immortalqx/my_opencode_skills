@@ -13,7 +13,7 @@
 
 Each example below traces a published or widely-adopted line of work back to the disruptive reframing at its root. For each example, the relevant principle (First Principles, Elephant in the Room, Technology Cycle, Hamming's Rule) is identified. The purpose is to show what a disruptive reframing looks like in the wild and to calibrate paradigm-shift analysis against real precedents.
 
-Examples 2, 3, and 4 appear in `handbook/02_Idea_Generation/2.3_进阶_如何做颠覆式创新.md` as illustrations for the principle they anchor.
+Examples 2, 3, and 4 are the worked illustrations for the techniques in `paradigm-first-principles.md`, `paradigm-elephant.md`, and `paradigm-hamming.md` respectively; see those files for the principle each example anchors.
 
 ## 2. Example 1: Transformer architecture
 

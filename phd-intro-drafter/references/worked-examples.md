@@ -10,7 +10,7 @@
 
 ## 1. How to read these examples
 
-Each example below reverse-engineers a published Introduction into the six-paragraph outline this skill produces. The outlines are faithful to the published papers, with some writing points paraphrased. Sources are `handbook/06_Case_Studies/6.1`, `6.2`, and `6.3`.
+Each example below reverse-engineers a published Introduction into the six-paragraph outline this skill produces. The outlines are faithful to the published papers, with some writing points paraphrased. Sources: Alpha-SQL (ICML 2025), AFlow (ICLR 2025), LEAD (VLDB 2026). The outlines below are self-contained; the original case-study files are not required.
 
 The purpose is to show the outline at the level of detail this skill should produce when given similar inputs.
 

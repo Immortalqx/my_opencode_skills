@@ -12,7 +12,7 @@
 
 Each example below is a retrospective evaluation of a published paper as if the idea had been submitted for evaluation at the pre-writing stage. The format matches the skill's output contract. The examples ground the scoring rubric and the paradigm-shift probe in concrete work. They are not predictions; the papers are already published and accepted at their venues.
 
-Sources: `handbook/06_Case_Studies/6.1_ICML_2025_Alpha-SQL*.md`, `handbook/06_Case_Studies/6.2_ICLR_2025_AFlow*.md`, `handbook/06_Case_Studies/6.3_VLDB_2026_LEAD*.md`.
+Sources: Alpha-SQL (ICML 2025), AFlow (ICLR 2025), LEAD (VLDB 2026). The worked evaluations below are self-contained; the original case-study files are not required.
 
 ## 2. Example A: Alpha-SQL (ICML 2025), incremental, Strong Accept
 
@@ -97,7 +97,7 @@ Probe score: 2. Pure incremental; frame as Novel Method.
 | Technology Cycle | Yes | LLMs make operator-graph search meaningful |
 | Hamming's Rule | Partial | Important for agent research |
 
-Probe score: 5. Disruptive seeds present. Recommend reading handbook 2.3 for deepening the framing around "workflow as a first-class object".
+Probe score: 5. Disruptive seeds present. Recommend digging into the four `paradigm-*.md` deep-dives to sharpen the framing around "workflow as a first-class object".
 
 **5. Feasibility.** Green.
 
@@ -147,7 +147,7 @@ Probe score: 5. Disruptive seeds present. Recommend reading handbook 2.3 for dee
 | Technology Cycle | Partial | Instruction tuning only recently became a bottleneck |
 | Hamming's Rule | Partial | Important to scale efficiency |
 
-Probe score: 5. Disruptive seeds. Recommend reading handbook 2.3 for deepening the First Principles framing.
+Probe score: 5. Disruptive seeds. Recommend digging into `paradigm-first-principles.md` (and the other `paradigm-*.md` deep-dives) to deepen the First Principles framing.
 
 **5. Feasibility.** Yellow on timeline; six months is aggressive for a Data-intensive paper. Mitigation: preregister the main claim and cut scope if experiments overrun at the four-month mark.
 

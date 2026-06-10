@@ -20,7 +20,7 @@ Vibe Research is the modern research workflow where large language models and AI
 
 The skill has three sub-flows: **Vibe Coding** (AI-assisted code), **Vibe Figure** (AI-assisted figure production), **Vibe Writing** (AI-assisted prose polish). Each is governed by six behavioural rules that draw a hard line between acceptable use (mechanical acceleration, auxiliary suggestions, style correction) and academic misconduct (fabricated citations, outsourced scientific judgment, hidden AI authorship).
 
-This skill is a meta-skill that orchestrates tool selection, flow design, and integrity enforcement across a research session. It consolidates the the curriculum's Vibe Research section into a single invocable procedure.
+This skill is a meta-skill that orchestrates tool selection, flow design, and integrity enforcement across a research session. It consolidates the three Vibe sub-flows (Coding, Figure, Writing) and the six behavioural rules — each documented in this skill's `references/` — into a single invocable procedure.
 
 ## When to use this skill
 
@@ -34,7 +34,7 @@ This skill is a meta-skill that orchestrates tool selection, flow design, and in
 
 - The user wants AI to generate the paper directly. Reject politely; the integrity rules forbid it. Redirect to `phd-intro-drafter`, `phd-tech-paper-template`, or `phd-pre-submission-reviewer` depending on intent.
 - The user wants a code implementation done. This skill guides the process; it does not replace the implementation itself.
-- The user wants to evaluate research direction. Use `phd-idea-evaluator` (see handbook 2.3 for disruptive-innovation deep-dive).
+- The user wants to evaluate research direction. Use `phd-idea-evaluator` (see its four `references/paradigm-*.md` deep-dives for disruptive-innovation exploration).
 
 ## Core procedure
 

@@ -5,7 +5,7 @@
 1. Incremental versus disruptive
 2. The four probing principles
 3. Scoring the probe
-4. When to delegate to handbook 2.3
+4. When to dig into the four `paradigm-*.md` deep-dives
 5. Risk and reward trade-off
 6. Portfolio strategy for a PhD
 
@@ -60,12 +60,12 @@ Answer each of the four principles as Yes, Partial, or No. Count Yes as 2, Parti
 
 - **0-2**: pure incremental. Frame as incremental in the Introduction; emphasise Higher or Faster.
 - **3-4**: incremental with disruptive seeds. Explicitly call out the disruptive aspect in the Introduction to capture reader attention.
-- **5-6**: disruptive potential. Consider reading handbook 2.3 to deepen the framing.
-- **7-8**: genuine paradigm-shift candidate. Definitely study handbook 2.3; the Introduction should lead with First Principles framing.
+- **5-6**: disruptive potential. Consider digging into the four `paradigm-*.md` deep-dives to deepen the framing.
+- **7-8**: genuine paradigm-shift candidate. Definitely study the four `paradigm-*.md` deep-dives; the Introduction should lead with First Principles framing.
 
-## 4. When to delegate to handbook 2.3
+## 4. When to dig into the four `paradigm-*.md` deep-dives
 
-Recommend the user read handbook 2.3 when:
+Recommend the user dig into the four `paradigm-*.md` deep-dives (`paradigm-first-principles.md`, `paradigm-elephant.md`, `paradigm-technology-cycle.md`, `paradigm-hamming.md`) when:
 
 - Probe score is 5 or higher.
 - Probe score is lower but the user explicitly wants to pursue a disruptive angle.

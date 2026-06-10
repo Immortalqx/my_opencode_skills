@@ -107,4 +107,4 @@ Contribution 3: "theoretical analysis of convergence." Module: none; no theoreti
 - **Key Idea drift**: the Key Idea as filled in the template is different from the Key Idea the paper actually develops in the methodology. Catch by re-reading the Key Idea cell after the Methodology cell is filled.
 - **Limitation-Contribution short-circuit**: a contribution that does not address any limitation; the paper solves a different problem from the one it motivates.
 
-All of the above are CRITICAL gaps. Fix them before running `intro-drafter` or writing any Introduction prose.
+All of the above are CRITICAL gaps. Fix them before running `phd-intro-drafter` or writing any Introduction prose.

@@ -32,7 +32,7 @@ The goal is to kill weak ideas before the student invests months, and to shape p
 ## When NOT to use this skill
 
 - The user has already implemented the idea and is writing the paper. Use `phd-intro-drafter`, `phd-tech-paper-template`, or `phd-benchmark-paper-template` (separate plugin) instead.
-- The user explicitly wants brainstorming of new ideas from scratch. Use plain conversation; see handbook 2.3 for a disruptive-innovation playbook.
+- The user explicitly wants brainstorming of new ideas from scratch. Use plain conversation; see the four `references/paradigm-*.md` deep-dives (`paradigm-first-principles.md`, `paradigm-elephant.md`, `paradigm-technology-cycle.md`, `paradigm-hamming.md`) for a disruptive-innovation playbook.
 - The user asks for review of an existing manuscript. Use `phd-pre-submission-reviewer`.
 - The user asks to evaluate a benchmark contribution specifically. Use `phd-benchmark-paper-template` (separate plugin) in targeted mode.
 
@@ -78,7 +78,7 @@ Score each 1-10 with explicit evidence from the user's stated contribution. Iden
 
 ### Step 5: Paradigm-shift probe
 
-See: references/paradigm-shift-probe.md for the four probing principles (First Principles, Elephant in the Room, Technology Cycle, Hamming's Rule) and the cross-reference to handbook section 2.3 when deeper disruptive-innovation exploration is needed.
+See: references/paradigm-shift-probe.md for the four probing principles (First Principles, Elephant in the Room, Technology Cycle, Hamming's Rule); the four `paradigm-*.md` deep-dives (`paradigm-first-principles.md`, `paradigm-elephant.md`, `paradigm-technology-cycle.md`, `paradigm-hamming.md`) carry the matching techniques when deeper disruptive-innovation exploration is needed.
 
 Test the idea against four questions:
 
@@ -87,7 +87,7 @@ Test the idea against four questions:
 3. Does it ride a technology-cycle shift (for example, LLMs making a previously impractical approach now feasible)?
 4. If this problem solved itself, would the field change meaningfully? (Hamming's Rule)
 
-Two or more yes answers means the idea has disruptive potential. Note that, and recommend reading handbook 2.3 to deepen the thinking on disruptive-innovation dimensions.
+Two or more yes answers means the idea has disruptive potential. Note that, and recommend reading the four `paradigm-*.md` deep-dives (First Principles, Elephant in the Room, Technology Cycle, Hamming's Rule) to deepen the thinking on disruptive-innovation dimensions.
 
 ### Step 6: Feasibility check
 

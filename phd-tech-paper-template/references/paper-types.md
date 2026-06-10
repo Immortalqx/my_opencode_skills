@@ -15,9 +15,9 @@ Technical papers at top venues (SIGMOD, VLDB, ICML, NeurIPS, ICLR, ACL) fall int
 
 - **Technique Paper**: new method or mechanism on an existing problem. Key Idea carries the narrative.
 - **New Problem/Setting Paper**: a new problem formulation or a new setting within a known problem. Goal or Problem Formulation carries the narrative.
-- **Cross-domain Technique Paper**: a Technique Paper whose contribution transplants an idea from one field to another. The Key Idea carries the narrative but the Broader dimension from the `idea-evaluator` framework is emphasised in the Introduction.
+- **Cross-domain Technique Paper**: a Technique Paper whose contribution transplants an idea from one field to another. The Key Idea carries the narrative but the Broader dimension from the `phd-idea-evaluator` framework is emphasised in the Introduction.
 
-Benchmark papers are a separate category; use `benchmark-paper-template` (separate plugin).
+Benchmark papers are a separate category; use `phd-benchmark-paper-template` (separate plugin).
 
 ## 2. Technique Paper
 
@@ -74,12 +74,12 @@ Example: AFlow (ICLR 2025) transplants operator-graph search (from neural archit
 
 Ask the following in order. First yes decides:
 
-1. Is the paper's primary contribution a benchmark? If yes, stop and redirect to `benchmark-paper-template` (separate plugin).
+1. Is the paper's primary contribution a benchmark? If yes, stop and redirect to `phd-benchmark-paper-template` (separate plugin).
 2. Is the paper's primary contribution a new problem formulation that the community has not studied? If yes, New Problem/Setting.
 3. Is the paper's primary contribution a technique transplanted from another field? If yes, Mixed (Technique with cross-domain framing).
 4. Default: Technique Paper.
 
-If the user's answers conflict with this order, investigate. A paper can legitimately have two strong framings; see the mixed-case discussion in the Introduction-drafter skill's paper-types reference.
+If the user's answers conflict with this order, investigate. A paper can legitimately have two strong framings; see the mixed-case discussion in `phd-intro-drafter`'s `references/paper-types.md`.
 
 ## 6. How positioning affects the template
 

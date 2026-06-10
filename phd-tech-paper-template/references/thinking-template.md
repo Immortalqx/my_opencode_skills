@@ -149,7 +149,7 @@ If the module count and challenge count do not match, one side is wrong. Fix bef
 
 ### Detection rule
 
-Run the contribution-patterns audit from the `intro-drafter` skill's `references/contribution-patterns.md` (cited cross-skill in prose, not as a reference pointer).
+Run the contribution-patterns audit from the `phd-intro-drafter` skill's `references/contribution-patterns.md` (cited cross-skill in prose, not as a reference pointer).
 
 ## 8. Methodology-outline derivation
 

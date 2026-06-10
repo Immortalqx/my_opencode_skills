@@ -8,7 +8,7 @@
 4. Step 3: Generate first sketch
 5. Step 4: Vectorise by hand
 6. What AI cannot do
-7. Integration with figure-designer
+7. Integration with phd-figure-designer
 
 ## 1. Why Vibe Figure works
 
@@ -72,7 +72,7 @@ Take the first sketch and produce the final paper-ready figure by hand in a vect
 - Motivated Example and Solution Overview: PowerPoint (draft) or Figma (polish). Do not trust AI sketches as final; they lack typographic discipline.
 - Experimental Results: Matplotlib or Seaborn scripted from the actual experiment outputs. The script lives in the repository and regenerates on data updates.
 
-Quality control (see `figure-designer`'s `design-rules.md`):
+Quality control (see `phd-figure-designer`'s `design-rules.md`):
 
 - Vector format export.
 - Font size at least 8pt post-scaling.
@@ -92,13 +92,13 @@ AI-generated figures in their current state cannot:
 
 Plan for AI-assistance in ideation and drafting, not in final production. Every final figure is the user's work.
 
-## 7. Integration with figure-designer
+## 7. Integration with phd-figure-designer
 
-This skill orchestrates the workflow; `figure-designer` handles the individual figure design decision.
+This skill orchestrates the workflow; `phd-figure-designer` handles the individual figure design decision.
 
 Typical sequence:
 
-1. `vibe-research-workflow` (this skill, figure-mode): plan the figure-production session.
-2. `figure-designer`: for each figure, decide paradigm, layout, labelling, tool, and run the audit.
+1. `phd-vibe-research-workflow` (this skill, figure-mode): plan the figure-production session.
+2. `phd-figure-designer`: for each figure, decide paradigm, layout, labelling, tool, and run the audit.
 3. Execute the four-step flow above for each figure.
 4. Integrate back into the paper.
