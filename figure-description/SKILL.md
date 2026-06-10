@@ -52,10 +52,7 @@ For each figure, assign numerals using the series convention:
 | FIG. 2 | 200-299 |
 | FIG. 3 | 300-399 |
 
-For each identified component:
-- Assign the next available numeral in the series
-- Cross-reference to the claim elements it supports
-- Note if a component appears in multiple figures (use same numeral across figures)
+For each identified component: - Assign the next available numeral in the series - Cross-reference to the claim elements it supports - Note if a component appears in multiple figures (use same numeral across figures)
 
 ### Step 4: Generate Drawing Descriptions
 
@@ -101,9 +98,7 @@ Verify that every claim element has at least one reference numeral:
 |---------------|--------|---------|--------|
 | [element] | [which fig] | [numeral] | Covered / [MISSING] |
 
-If any claim element has no corresponding figure or numeral, flag it:
-- `[MISSING FIGURE: Need a diagram showing {element description}]`
-- `[MISSING NUMERAL: Component {name} in figure {X} needs a numeral]`
+If any claim element has no corresponding figure or numeral, flag it: - `[MISSING FIGURE: Need a diagram showing {element description}]` - `[MISSING NUMERAL: Component {name} in figure {X} needs a numeral]`
 
 ### Step 7: Output
 

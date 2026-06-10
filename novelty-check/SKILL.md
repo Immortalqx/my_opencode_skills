@@ -14,15 +14,8 @@ Check whether a proposed method/idea has already been done in the literature: **
 Given a method description, systematically verify its novelty:
 
 ### Phase A: Extract Key Claims
-1. Read the user's method description
-2. Identify 3-5 core technical claims that would need to be novel:
-   - What is the method?
-   - What problem does it solve?
-   - What is the mechanism?
-   - What makes it different from obvious baselines?
 
 ### Phase B: Multi-Source Literature Search
-For EACH core claim, search using ALL available sources:
 
 1. **Web Search** (via `WebSearch`):
    - Search arXiv, Google Scholar, Semantic Scholar
@@ -37,17 +30,10 @@ For EACH core claim, search using ALL available sources:
 3. **Read abstracts**: For each potentially overlapping paper, WebFetch its abstract and related work section
 
 ### Phase C: Evidence Synthesis
-Compare the proposed idea against the strongest overlapping work found in
-Phase B. Base the comparison directly on the collected evidence.
 
-For each close paper, identify:
-- Which claim(s) it overlaps
-- Whether the overlap is in the method, problem setting, objective, data, or empirical finding
-- Whether the proposed difference is technical, experimental, or only a framing difference
-- What evidence supports the difference: abstract, method section, figures, experiments, or claims
+For each close paper, identify: - Which claim(s) it overlaps - Whether the overlap is in the method, problem setting, objective, data, or empirical finding - Whether the proposed difference is technical, experimental, or only a framing difference - What evidence supports the difference: abstract, method section, figures, experiments, or claims
 
 ### Phase D: Novelty Report
-Output a structured report:
 
 ```markdown
 ## Novelty Check Report
@@ -75,10 +61,3 @@ Output a structured report:
 ```
 
 ### Important Rules
-- Be BRUTALLY honest — false novelty claims waste months of research time
-- "Applying X to Y" is NOT novel unless the application reveals surprising insights
-- Check both the method AND the experimental setting for novelty
-- If the method is not novel but the FINDING would be, say so explicitly
-- Always check the most recent 6 months of arXiv — the field moves fast
-- Treat unavailable sources as uncertainty, not as evidence of novelty
-- Base the final judgment on evidence and explicitly state uncertainty
