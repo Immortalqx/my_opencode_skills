@@ -46,28 +46,13 @@ Unless a skill explicitly says otherwise, these skills are designed for standalo
 
 ## Install
 
-The installable unit is each top-level skill directory itself:
+Each top-level directory is a skill. Copy it into `~/.claude/skills/`:
 
-```text
-source: <this-repo>/<skill>/
-target: ~/.claude/skills/<skill>/
-copy the directory contents as-is
-skip any __pycache__ directory
+```bash
+cp -r <skill> ~/.claude/skills/<skill>
 ```
 
-To install every skill from this repository, copy these directories into the local Claude skills directory:
-
-```text
-alphaxiv, arxiv, doc-coauthoring, docx, drawio-diagram, figure-description,
-phd-figure-designer, formula-derivation, grant-proposal, help-me-read,
-mmx-cli, mock-review, novelty-check, pdf, phd-benchmark-paper-template,
-phd-idea-evaluator, phd-intro-drafter, phd-pre-submission-reviewer,
-phd-tech-paper-template, phd-vibe-research-workflow, pptx, proof-writer,
-research-lit, research-survey-loop, research-wiki, skill-creator,
-theme-factory, update-source-map, xlsx
-```
-
-A one-liner to install all 29 skills into `~/.claude/skills/`:
+To install all 29 skills at once:
 
 ```bash
 for s in alphaxiv arxiv doc-coauthoring docx drawio-diagram figure-description \
@@ -81,9 +66,7 @@ for s in alphaxiv arxiv doc-coauthoring docx drawio-diagram figure-description \
 done
 ```
 
-Do not install repository utility folders such as `scripts/`.
-
-After installing or updating local skills, restart Claude Code so the new skill metadata is picked up.
+After installing or updating skills, restart Claude Code so the new skill metadata is picked up.
 
 ## Notes
 

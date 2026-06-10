@@ -46,28 +46,13 @@
 
 ## 安装
 
-安装单元就是每个顶层 skill 目录本身：
+每个顶层目录就是一个 skill，直接把它拷到 `~/.claude/skills/` 即可：
 
-```text
-source: <this-repo>/<skill>/
-target: ~/.claude/skills/<skill>/
-copy the directory contents as-is
-skip any __pycache__ directory
+```bash
+cp -r <skill> ~/.claude/skills/<skill>
 ```
 
-如果要安装本仓库的全部 skills，请把以下目录复制到本地 Claude skills 目录：
-
-```text
-alphaxiv, arxiv, doc-coauthoring, docx, drawio-diagram, figure-description,
-phd-figure-designer, formula-derivation, grant-proposal, help-me-read,
-mmx-cli, mock-review, novelty-check, pdf, phd-benchmark-paper-template,
-phd-idea-evaluator, phd-intro-drafter, phd-pre-submission-reviewer,
-phd-tech-paper-template, phd-vibe-research-workflow, pptx, proof-writer,
-research-lit, research-survey-loop, research-wiki, skill-creator,
-theme-factory, update-source-map, xlsx
-```
-
-一行命令把 29 个 skills 全部安装到 `~/.claude/skills/`：
+一次性安装全部 29 个 skills：
 
 ```bash
 for s in alphaxiv arxiv doc-coauthoring docx drawio-diagram figure-description \
@@ -81,9 +66,7 @@ for s in alphaxiv arxiv doc-coauthoring docx drawio-diagram figure-description \
 done
 ```
 
-不要把 `scripts/` 这样的仓库工具目录安装进 `~/.claude/skills`。
-
-安装或更新本地 skills 后，需要重启 Claude Code，新的 skill metadata 才会被加载。
+安装或更新本地 skills 后，重启 Claude Code 让新 skill 的 metadata 生效。
 
 ## 说明
 
