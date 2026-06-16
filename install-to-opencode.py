@@ -258,6 +258,10 @@ def _substitute_in_skill_paths(text: str, skill: Skill) -> tuple[str, int]:
     """Replace bare `scripts/<file>`, `references/<file>`, `assets/<file>` with
     `@@SKILL_DIR@@/<that path>` for every file that actually exists in the skill.
 
+    Skips occurrences that are part of a cross-skill reference (e.g.,
+    `@@SKILL_DIR:other@@/scripts/foo.py`) — those are resolved by the cross-skill
+    stage, and double-substitution would produce a path with two prefixes.
+
     Returns (new_text, num_replacements).
     """
     files = skill.find_files()
@@ -271,15 +275,28 @@ def _substitute_in_skill_paths(text: str, skill: Skill) -> tuple[str, int]:
         sub, _, fname = rel.partition("/")
         if sub not in ("scripts", "references", "assets"):
             continue
-        # Skip the file if it lives in a deeper subdir (we only handle direct children)
-        # e.g., scripts/office/soffice.py is fine but the substitution target is
-        # @@SKILL_DIR@@/scripts/office/soffice.py
         placeholder = f"{PLACEHOLDER_SINGLE}/{rel}"
         if placeholder in text:
             continue  # already substituted
-        if rel in text:
-            text = text.replace(rel, placeholder)
+        # Replace each occurrence but skip those preceded by @@SKILL_DIR:<name>@@/
+        # (i.e. a cross-skill reference where the path is appended after a `@@/`
+        # separator).
+        new_text = text
+        i = 0
+        while True:
+            j = new_text.find(rel, i)
+            if j < 0:
+                break
+            # Look at the text right before the path: it must end with
+            # `@@SKILL_DIR:<name>@@/` for this to be a cross-skill reference.
+            preceding = new_text[max(0, j - 64):j]
+            if re.search(r"@@SKILL_DIR:[\w-]+@@/$", preceding):
+                i = j + 1
+                continue
+            new_text = new_text[:j] + placeholder + new_text[j + len(rel):]
             n_total += 1
+            i = j + len(placeholder)
+        text = new_text
     return text, n_total
 
 
@@ -348,13 +365,16 @@ def _validate_skill_text(
         # e.g. "x_temp_claude" should not match "temp_claude"
         if re.search(rf"\b{re.escape(s)}\b", text):
             warnings.append(f"[{name}] SKILL.md still contains {s!r}")
-    # If the SKILL.md uses scripts/references/assets references but the
-    # in-skill substitution produced zero hits, the placeholders weren't added
+    # If the SKILL.md uses scripts/references/assets references but neither
+    # in-skill substitution ran nor a SKILL_DIR placeholder exists, something
+    # was missed. (Cross-skill references like @@SKILL_DIR:other@@/... count
+    # as "handled" since they will be resolved by the cross-skill stage.)
     uses_subresources = any(p in text for p in ("scripts/", "references/", "assets/"))
-    if uses_subresources and in_skill_subs == 0 and PLACEHOLDER_SINGLE not in text:
+    has_placeholder = PLACEHOLDER_SINGLE in text or "@@SKILL_DIR:" in text
+    if uses_subresources and in_skill_subs == 0 and not has_placeholder:
         warnings.append(
             f"[{name}] SKILL.md references scripts/references/assets "
-            f"but neither in-skill substitution nor {PLACEHOLDER_SINGLE!r} marker found"
+            f"but no @@SKILL_DIR marker was added"
         )
 
 
@@ -415,14 +435,14 @@ def _process_skill(
             text, n = _substitute_in_skill_paths(text, skill)
             in_subs += n
 
+            # Validate SKILL.md BEFORE cross-skill substitution so the
+            # @@SKILL_DIR:<name>@@ marker is still present in the text.
+            if src_file.name == "SKILL.md":
+                _validate_skill_text(skill.name, text, rules, warnings, in_subs)
+
             # Stage 2b: substitute cross-skill references
             text, n = _substitute_cross_skill_refs(text, all_skill_names, target_root)
             cross_subs += n
-
-            # Validate SKILL.md BEFORE placeholder substitution
-            # (so the @@SKILL_DIR@@ marker is still in the text)
-            if src_file.name == "SKILL.md":
-                _validate_skill_text(skill.name, text, rules, warnings, in_subs)
 
             # Stage 2c: substitute the @@SKILL_DIR@@ placeholder with absolute path
             text, n = _substitute_single(text, target / skill.name)  # target is target_root/skill
@@ -641,6 +661,23 @@ class TestSubstitution(unittest.TestCase):
             self.assertEqual(n, 2)
             self.assertIn("@@SKILL_DIR@@/scripts/foo.py", new)
             self.assertIn("@@SKILL_DIR@@/references/bar.md", new)
+
+    def test_in_skill_substitution_skips_cross_skill(self) -> None:
+        """Bare `scripts/foo.py` that is part of a `@@SKILL_DIR:other@@/...`
+        reference must NOT be substituted to the current skill's path."""
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            skill_path = Path(tmp) / "fake-skill"
+            (skill_path / "scripts").mkdir(parents=True)
+            (skill_path / "scripts" / "foo.py").write_text("# foo")
+            skill = Skill(name="fake-skill", path=skill_path)
+            # The `scripts/foo.py` is preceded by @@SKILL_DIR:other@@
+            text = "use @@SKILL_DIR:other@@/scripts/foo.py but also scripts/foo.py alone"
+            new, n = _substitute_in_skill_paths(text, skill)
+            # Only the standalone one should be substituted; the cross-skill one is left alone
+            self.assertEqual(n, 1)
+            self.assertIn("@@SKILL_DIR:other@@/scripts/foo.py", new)
+            self.assertIn("@@SKILL_DIR@@/scripts/foo.py", new)
 
     def test_cross_skill_substitution(self) -> None:
         all_names = {"arxiv", "mock-review"}

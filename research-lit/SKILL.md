@@ -59,7 +59,7 @@ Examples:
 | --- | --- | --- | --- | --- |
 | 1 | Local PDFs | `local` | `papers/**/*.pdf`, `literature/**/*.pdf`, or a user-provided library path | Existing papers the user already has |
 | 2 | Web search | `web` | Current agent web tools or direct HTTP access | Official paper pages, OpenReview, author pages, Semantic Scholar pages, venue pages |
-| 3 | Bundled arXiv helper | `arxiv` | `${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py` | Structured metadata and optional PDF download |
+| 3 | Bundled arXiv helper | `arxiv` | `@@SKILL_DIR:arxiv@@/scripts/arxiv_fetch.py` | Structured metadata and optional PDF download |
 
 ## Workflow
 
@@ -105,7 +105,7 @@ Rules:
 Always run the local helper for a structured arXiv pass:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py" search "QUERY" --max 10
+python "@@SKILL_DIR:arxiv@@/scripts/arxiv_fetch.py" search "QUERY" --max 10
 ```
 
 This returns richer structured data than a generic search snippet:
@@ -123,7 +123,7 @@ Merge the arXiv results with the web-search findings and de-duplicate.
 Optional PDF download, only when `ARXIV_DOWNLOAD = true`:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py" download ARXIV_ID --dir papers/
+python "@@SKILL_DIR:arxiv@@/scripts/arxiv_fetch.py" download ARXIV_ID --dir papers/
 ```
 
 Download rules:
@@ -178,5 +178,5 @@ If the user wants files:
 - Always separate peer-reviewed papers from preprints when it matters.
 - Never fake certainty about novelty or claim strength.
 - Never assume another installed skill is required for the default path.
-- Use the bundled `${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py` helper instead of external install paths.
+- Use the bundled `@@SKILL_DIR:arxiv@@/scripts/arxiv_fetch.py` helper instead of external install paths.
 - If one source is missing or weak, continue with the others instead of failing.
