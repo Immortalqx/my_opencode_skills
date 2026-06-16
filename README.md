@@ -1,14 +1,82 @@
-# my_claude_skills
+# my_opencode_skills
 
-English | [Chinese](./README.zh-CN.md)
+[English](./README.md) | [中文](./README.zh-CN.md)
 
-Personal Claude Code skills for reusable research, writing, and document workflows.
+Personal opencode skills for reusable research, writing, and document workflows.
 
 Each skill is a top-level directory. A valid skill directory contains `SKILL.md` at its root and may also include `scripts/`, `references/`, or `assets/`. There is no nested installable directory and no per-skill README in this repository.
 
-All 29 skills are auto-invocable. Claude Code picks them up by their `description` triggers, and the user can also invoke any skill explicitly with `/<skill>`. Inside a skill's body, bundled scripts are referenced through the `${CLAUDE_SKILL_DIR}` path resolver so the path works regardless of install location (per-skill `~/.claude/skills/<skill>/` or repo-level copy).
+All 28 skills are auto-invocable. opencode picks them up by their `description` triggers, and the user can also invoke any skill explicitly via the `skill` tool. Inside a skill's body, bundled scripts and resources are referenced through the `@@SKILL_DIR@@` and `@@SKILL_DIR:<other-skill>@@` placeholders; the install script substitutes these with absolute install paths.
 
 Unless a skill explicitly says otherwise, these skills are designed for standalone, single-agent use: bundled local scripts, local files, and public web access are normal; notification hooks, reviewer-agent chains, and hidden cross-skill hooks are not part of the default path.
+
+## Install
+
+Requires **Python 3.10+** with `pyyaml` (`pip install pyyaml`) and **opencode 1.1+** (for `external_directory` auto-allow on skill directories).
+
+### Default install (all 28 skills to `~/.config/opencode/skills/`)
+
+```bash
+git clone <repo-url> my_opencode_skills
+cd my_opencode_skills
+python install-to-opencode.py --apply
+```
+
+After the first install or any update, restart opencode so the new skill metadata is picked up.
+
+### Custom target
+
+opencode also scans `~/.claude/skills/` and `~/.agents/skills/` by default, but you can install anywhere and add the path to your `opencode.json`:
+
+```bash
+python install-to-opencode.py --target D:/my-skills --apply
+```
+
+```jsonc
+// opencode.json
+{
+  "skills": {
+    "paths": ["D:/my-skills"]
+  }
+}
+```
+
+### Install specific skills
+
+```bash
+python install-to-opencode.py --skill arxiv --skill drawio-diagram --apply
+```
+
+### Re-install (overwrite)
+
+```bash
+python install-to-opencode.py --force --apply
+```
+
+### Dry-run
+
+All commands default to dry-run. Drop `--apply` to see what would change without writing anything.
+
+```bash
+python install-to-opencode.py                       # show install plan
+python install-to-opencode.py --preview arxiv      # show one skill's post-install SKILL.md
+python install-to-opencode.py --test               # run the built-in unit tests
+```
+
+## Path convention
+
+This repo never contains user-specific paths. It uses two placeholders that the install script resolves:
+
+| Placeholder | Meaning | Example after install |
+| --- | --- | --- |
+| `@@SKILL_DIR@@` | The current skill's install directory | `C:/Users/<you>/.config/opencode/skills/arxiv` |
+| `@@SKILL_DIR:<name>@@` | Another skill's install directory (cross-skill reference) | `C:/Users/<you>/.config/opencode/skills/arxiv` |
+
+Bare `scripts/<file>`, `references/<file>`, and `assets/<file>` paths inside `SKILL.md` are also substituted automatically when the file actually exists in the skill.
+
+## Scratch directories
+
+All skills follow one convention: any intermediate output the skill writes to a user's project lives under **`x_temp/`** at the project root. The leading `x_` sorts `x_temp` to the bottom of any directory listing, making it easy to spot and clean up. The legacy `temp_claude/`, `claude_temp/`, `x_temp_claude/`, etc. naming is gone.
 
 ## Skills
 
@@ -39,39 +107,14 @@ Unless a skill explicitly says otherwise, these skills are designed for standalo
 | [`research-lit`](./research-lit/) | Standalone literature-review workflow across local PDFs, public web search, and structured arXiv metadata. | Finding related work, mapping a paper landscape, and comparing paper clusters around a research topic. |
 | [`research-survey-loop`](./research-survey-loop/) | Long-running literature survey workflow that maintains stable task documents, searches prioritized sources, reads papers in chunks, and incrementally writes a Chinese survey. | Sustained literature surveys for robotics, embodied AI, computer vision, world models, navigation, manipulation, 3D perception, and adjacent topics. |
 | [`research-wiki`](./research-wiki/) | Persistent project-level research knowledge base for papers, ideas, experiments, claims, and typed relationships. | Building reusable project memory instead of rediscovering the same field map in every session. |
-| [`skill-creator`](./skill-creator/) | End-to-end workflow to create new skills, iterate on existing ones, run evals, and optimize description triggers. | User wants to author a new skill, refine an existing one, or measure skill performance with variance analysis. |
 | [`theme-factory`](./theme-factory/) | Ten pre-curated color and font themes (Ocean Depths, Sunset Boulevard, etc.) that can be applied to any artifact. | Applying consistent professional styling to slide decks, documents, reports, or HTML landing pages. |
 | [`update-source-map`](./update-source-map/) | Create or update an agent-readable source map for any project directory while preserving hand-curated per-file summaries across regenerations. | Starting work in an unfamiliar workspace, refreshing a stale index, or handing a project to another agent. |
 | [`xlsx`](./xlsx/) | Create, read, edit, and analyze spreadsheets with openpyxl and pandas, including formula recalculation and error scanning. | Any .xlsx / .xlsm / .csv / .tsv task such as adding columns, computing formulas, or cleaning messy tabular data. |
 
-## Install
-
-Each top-level directory is a skill. Copy it into `~/.claude/skills/`:
-
-```bash
-cp -r <skill> ~/.claude/skills/<skill>
-```
-
-To install all 29 skills at once:
-
-```bash
-for s in alphaxiv arxiv doc-coauthoring docx drawio-diagram figure-description \
-         phd-figure-designer formula-derivation grant-proposal help-me-read \
-         mmx-cli mock-review novelty-check pdf phd-benchmark-paper-template \
-         phd-idea-evaluator phd-intro-drafter phd-pre-submission-reviewer \
-         phd-tech-paper-template phd-vibe-research-workflow pptx proof-writer \
-         research-lit research-survey-loop research-wiki skill-creator \
-         theme-factory update-source-map xlsx; do
-  cp -r "$s" ~/.claude/skills/"$s"/
-done
-```
-
-After installing or updating skills, restart Claude Code so the new skill metadata is picked up.
-
 ## Notes
 
-- All 29 skills are auto-invocable. Claude Code matches user requests to skill descriptions, and the user can also invoke a skill explicitly with `/<skill-name>`. There is no `disable-model-invocation` flag on any skill in this repository.
-- Inside each `SKILL.md`, bundled scripts are referenced through `${CLAUDE_SKILL_DIR}` so paths work whether the skill is installed at `~/.claude/skills/<skill>/` or copied to a different location.
+- All 28 skills are auto-invocable. opencode matches user requests to skill descriptions; the user can also invoke a skill explicitly with the `skill` tool.
+- Inside each `SKILL.md`, bundled scripts and resources are referenced through `@@SKILL_DIR@@` (or `@@SKILL_DIR:<other>@@` for cross-skill). The install script substitutes these with the absolute install path so the same source tree works regardless of where it gets installed.
 - These skills encode personal research workflows and do not represent official processes of any venue, journal, or institution.
 - Skills sourced from external repositories keep their original names or use a `phd-` prefix to namespace them: Anthropic skills (no prefix) come from `anthropics/skills`, and the `phd-*` skills come from `HKUSTDial/Supervisor-Skills`. See each skill's `LICENSE.txt` or SKILL.md frontmatter for upstream license terms.
 - `mmx-cli` requires a configured local `mmx` command.

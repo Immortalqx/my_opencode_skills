@@ -1,14 +1,82 @@
-# my_claude_skills
+# my_opencode_skills
 
-[English](./README.md) | 中文
+[English](./README.md) | [中文](./README.zh-CN.md)
 
-这是个人维护的 Claude Code skills 集合，用于沉淀可复用的科研、写作和文档处理工作流。
+个人维护的 opencode skills 集合，用于沉淀可复用的科研、写作和文档处理工作流。
 
 每个 skill 都是一个顶层目录。合法的 skill 目录会在根部包含 `SKILL.md`，并可以按需附带 `scripts/`、`references/` 或 `assets/`。本仓库不再使用嵌套的可安装目录，也不再保留每个 skill 自己的 README。
 
-所有 29 个 skills 都是 auto-invocable 的。Claude Code 会根据用户请求匹配 skill 的 `description` 触发词，用户也可以通过 `/<skill>` 显式调用。在每个 skill 内部，附带脚本通过 `${CLAUDE_SKILL_DIR}` 路径解析器引用，因此无论按 `~/.claude/skills/<skill>/` 单 skill 安装，还是整体放到其它位置，路径都能正常解析。
+所有 28 个 skills 都是 auto-invocable。opencode 会根据 `description` 触发词自动匹配，用户也可以通过 `skill` 工具显式调用。在每个 skill 内部，附带脚本和资源通过 `@@SKILL_DIR@@` 和 `@@SKILL_DIR:<other-skill>@@` 占位符引用；安装脚本会把这些占位符替换成绝对安装路径。
 
 除非某个 skill 明确说明，否则这些 skills 默认面向独立、单 agent 使用：可以使用 skill 自带脚本、本地文件和公共网页来源；通知钩子、reviewer agent 链路或隐藏的跨 skill 钩子都不是默认路径。
+
+## 安装
+
+依赖：**Python 3.10+**（需要 `pyyaml`，`pip install pyyaml`）和 **opencode 1.1+**（1.1+ 起会对 skill 目录自动放行 `external_directory`）。
+
+### 默认安装（全部 28 个 skills 到 `~/.config/opencode/skills/`）
+
+```bash
+git clone <repo-url> my_opencode_skills
+cd my_opencode_skills
+python install-to-opencode.py --apply
+```
+
+首次安装或更新后，重启 opencode 让新 skill 的 metadata 生效。
+
+### 自定义安装位置
+
+opencode 默认还会扫描 `~/.claude/skills/` 和 `~/.agents/skills/`，你也可以装到任意位置并把路径加到 `opencode.json`：
+
+```bash
+python install-to-opencode.py --target D:/my-skills --apply
+```
+
+```jsonc
+// opencode.json
+{
+  "skills": {
+    "paths": ["D:/my-skills"]
+  }
+}
+```
+
+### 只装部分 skill
+
+```bash
+python install-to-opencode.py --skill arxiv --skill drawio-diagram --apply
+```
+
+### 覆盖重装
+
+```bash
+python install-to-opencode.py --force --apply
+```
+
+### 预览
+
+所有命令默认是 dry-run。去掉 `--apply` 就只会打印计划、不写盘。
+
+```bash
+python install-to-opencode.py                       # 打印安装计划
+python install-to-opencode.py --preview arxiv      # 预览某个 skill 装好后的 SKILL.md
+python install-to-opencode.py --test               # 跑内置单元测试
+```
+
+## 路径约定
+
+本仓库绝不包含用户特定路径。使用两种占位符，由安装脚本在落地时替换：
+
+| 占位符 | 含义 | 装好后示例 |
+| --- | --- | --- |
+| `@@SKILL_DIR@@` | 当前 skill 的安装目录 | `C:/Users/<你>/.config/opencode/skills/arxiv` |
+| `@@SKILL_DIR:<name>@@` | 另一个 skill 的安装目录（跨 skill 引用） | `C:/Users/<你>/.config/opencode/skills/arxiv` |
+
+`SKILL.md` 内的裸 `scripts/<file>`、`references/<file>`、`assets/<file>` 路径，只要对应的文件实际存在于该 skill 目录中，也会被自动替换。
+
+## 临时目录约定
+
+所有 skill 写到**用户项目**的中间产物统一放在项目根的 **`x_temp/`** 目录。前导 `x_` 让 `x_temp` 排在任何目录列表的底部，便于一眼找到和清理。`temp_claude/`、`claude_temp/`、`x_temp_claude/` 等历史命名已全部清掉。
 
 ## Skills
 
@@ -39,39 +107,14 @@
 | [`research-lit`](./research-lit/) | 独立文献调研工作流：结合本地 PDF、公共网页检索和结构化 arXiv 元数据进行相关工作检索、比较和综合。 | 围绕某个研究主题查找相关工作、梳理论文版图并比较不同方法簇。 |
 | [`research-survey-loop`](./research-survey-loop/) | 长周期文献综述工作流：维护稳定任务文档、按来源优先级搜索论文、分块阅读论文，并逐轮扩展中文综述。 | 机器人、具身智能、计算机视觉、世界模型、导航、操作、3D 感知等方向的持续文献调研。 |
 | [`research-wiki`](./research-wiki/) | 持久化项目级科研知识库，用于沉淀论文、想法、实验、主张以及它们之间的有类型关系。 | 把项目研究记忆固定下来，避免每个 session 都重新搭一遍同一张领域地图。 |
-| [`skill-creator`](./skill-creator/) | 端到端工作流：创建新 skill、迭代现有 skill、跑评测、优化 description 触发词。 | 用户想写新 skill、优化现有 skill，或带方差分析地衡量 skill 性能。 |
 | [`theme-factory`](./theme-factory/) | 10 套精选的配色与字体主题（Ocean Depths、Sunset Boulevard 等），可套用到任何 artifact。 | 给幻灯片、文档、报告或 HTML 着陆页应用统一专业样式。 |
 | [`update-source-map`](./update-source-map/) | 为任意项目目录创建或更新 agent 可读的 source map，并在刷新时保留手写的 per-file 摘要。 | 处理新的或不熟悉的 workspace、刷新过期索引，或把项目交给另一个 agent。 |
-| [`xlsx`](./xlsx/) | 用 openpyxl 和 pandas 创建、读取、编辑和分析电子表格，含公式重算和错误扫描。 | 任何 .xlsx / .xlsm / .csv / .tsv 任务，例如加列、计算公式、清洗脏数据。 |
-
-## 安装
-
-每个顶层目录就是一个 skill，直接把它拷到 `~/.claude/skills/` 即可：
-
-```bash
-cp -r <skill> ~/.claude/skills/<skill>
-```
-
-一次性安装全部 29 个 skills：
-
-```bash
-for s in alphaxiv arxiv doc-coauthoring docx drawio-diagram figure-description \
-         phd-figure-designer formula-derivation grant-proposal help-me-read \
-         mmx-cli mock-review novelty-check pdf phd-benchmark-paper-template \
-         phd-idea-evaluator phd-intro-drafter phd-pre-submission-reviewer \
-         phd-tech-paper-template phd-vibe-research-workflow pptx proof-writer \
-         research-lit research-survey-loop research-wiki skill-creator \
-         theme-factory update-source-map xlsx; do
-  cp -r "$s" ~/.claude/skills/"$s"/
-done
-```
-
-安装或更新本地 skills 后，重启 Claude Code 让新 skill 的 metadata 生效。
+| [`xlsx`](./xlsx/) | 用 openpyxl 和 pandas 创建、读取、编辑和分析电子表格，含公式重算和错误扫描。 | 任何 .xlsx / .xlsm / .csv / .tsv 任务，例如加列、计算公式、清洗脏表格数据。 |
 
 ## 说明
 
-- 所有 29 个 skills 都是 auto-invocable 的。Claude Code 会根据 `description` 触发词自动匹配；用户也可以用 `/<skill-name>` 显式调用。本仓库中没有任何一个 skill 带有 `disable-model-invocation` 标记。
-- 每个 `SKILL.md` 内部，附带脚本都通过 `${CLAUDE_SKILL_DIR}` 引用，因此无论 skill 是被装到 `~/.claude/skills/<skill>/`，还是被整体复制到别处，路径都不会失效。
+- 所有 28 个 skills 都是 auto-invocable。opencode 根据 `description` 触发词自动匹配；用户也可以用 `skill` 工具显式调用。本仓库没有任何一个 skill 带有 `disable-model-invocation` 标记。
+- 每个 `SKILL.md` 内部，附带脚本和资源都通过 `@@SKILL_DIR@@`（跨 skill 用 `@@SKILL_DIR:<other>@@`）引用。安装脚本在落地时把这些占位符替换为绝对安装路径，所以同一份源码无论装到 `~/.config/opencode/skills/<skill>/` 还是别的位置都能正常工作。
 - 这些 skills 是个人科研工作流沉淀，不代表任何会议、期刊或机构的官方流程。
 - 从外部仓库引入的 skills 保持原名或加 `phd-` 前缀以标记来源：Anthropic 官方 skills（无前缀）来自 `anthropics/skills` 仓库；`phd-*` 系列来自 `HKUSTDial/Supervisor-Skills` 仓库。各 skill 的上游许可条款见其 `LICENSE.txt` 或 SKILL.md frontmatter。
 - `mmx-cli` 需要本地已经配置好 `mmx` 命令。
