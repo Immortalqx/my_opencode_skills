@@ -1,14 +1,13 @@
 ---
 name: help-me-read
 description: Deep-read a single user-provided PDF (lecture slides or academic paper) and produce a story-driven close-read note in the user's working language. Use when the user asks for a close-read, detailed study notes, tutor-style breakdown, deep study notes, open-book review, 精读, 深入解析, or hands over a PDF plus a target output path.
-argument-hint: <pdf-path> [output-path] [language]
 allowed-tools: Read Write Edit Glob WebSearch WebFetch Bash
 when_to_use: The skill reads every page, captures full-page screenshots of slides and region screenshots of paper figures, runs divergent web searches to fill in background that is not in the PDF, uses available image-understanding tools for non-OCR figure analysis, and writes a new note file with a single unified narrative metaphor, motivation-problem-solution-why sections per topic, key term glosses, and source links. The skill never overwrites an existing note and writes per-note assets in a sibling folder.
 ---
 
 # Help Me Read
 
-User-provided PDF: `$ARGUMENTS`
+User-provided PDF: `the user's most recent request`
 
 The user wants a story-driven close-read of a PDF. Treat the PDF as the primary source. Everything that is not in the PDF must be searched or visually inspected, not invented.
 
@@ -53,7 +52,7 @@ The note must:
 
 When the user does not specify a path:
 
-1. Look for a recent temp-like working root in the workspace that follows the user's existing convention. Names like `x_temp`, `x_temp_claude`, `temp_claude`, `temp`, `tmp`, `claude_temp`, or `.temp` are common patterns the user may already use; reuse whatever style the workspace already follows. If the workspace has a different convention, follow that. If the workspace has no obvious convention at all, pick a temp-like folder name that fits and record the choice in `task_summary.md`.
+1. Look for a recent temp-like working root in the workspace that follows the user's existing convention. Names like `x_temp`, `x_temp_claude`, `x_temp`, `temp`, `tmp`, `claude_temp`, or `.temp` are common patterns the user may already use; reuse whatever style the workspace already follows. If the workspace has a different convention, follow that. If the workspace has no obvious convention at all, pick a temp-like folder name that fits and record the choice in `task_summary.md`.
 2. Otherwise create a skill-scoped task folder under that root, named for this skill and the document slug (e.g. `<workspace>/<temp-root>/help-me-read/<doc-slug>/`). The exact names of the temp root and the task folder are runtime choices, not hard-coded in this skill.
 3. Inside that task folder, create typed subfolders:
    ```text

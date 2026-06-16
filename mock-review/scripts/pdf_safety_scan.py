@@ -208,7 +208,7 @@ def write_markdown(report: dict, output_path: Path) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Scan PDFs for manuscript artifact risks.")
     parser.add_argument("pdfs", nargs="+", help="PDF files to scan.")
-    parser.add_argument("--output-dir", default="temp_claude/scans", help="Directory for reports.")
+    parser.add_argument("--output-dir", default="x_temp/scans", help="Directory for reports.")
     parser.add_argument("--json", action="store_true", help="Print JSON summary to stdout.")
     return parser
 

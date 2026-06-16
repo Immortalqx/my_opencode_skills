@@ -1,12 +1,11 @@
 ---
 name: figure-description
 description: Process user-provided patent figures and generate formal drawing descriptions with reference numerals. Use when the user wants to describe patent figures, says "附图处理", "附图说明", "figure description", or "drawings description", or hands over a patent figure folder and asks for numbered component descriptions in CN, US, or EP style.
-argument-hint: <patent-figures-path> [jurisdiction]
 ---
 
 # Figure Description for Patents
 
-Process patent figures and generate drawing descriptions based on: **$ARGUMENTS**
+Process patent figures and generate drawing descriptions based on: **the user's most recent request**
 
 This skill processes user-provided technical diagrams and assigns reference numerals.
 

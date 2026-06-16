@@ -1,13 +1,12 @@
 ---
 name: alphaxiv
 description: Quick single-paper lookup via AlphaXiv LLM-optimized summaries with tiered source fallback. Use when the user wants to explain one arXiv paper, asks to summarize a paper, pastes an arXiv or AlphaXiv URL, or provides a bare arXiv ID. Not intended for broad literature search.
-argument-hint: <arxiv-id-or-url>
 allowed-tools: WebFetch Bash
 ---
 
 # AlphaXiv Paper Lookup
 
-Lookup paper: $ARGUMENTS
+Lookup paper: the user's most recent request
 
 > Quick single-paper reader with tiered source fallback (overview → full markdown → LaTeX source). Powered by [AlphaXiv](https://alphaxiv.org).
 
@@ -27,7 +26,7 @@ This skill is a **quick single-paper reader** for one known arXiv paper. It is b
 
 ### Step 1: Parse Arguments & Extract Paper ID
 
-Parse `$ARGUMENTS` to extract a bare arXiv paper ID. Accept these input formats:
+Parse `the user's most recent request` to extract a bare arXiv paper ID. Accept these input formats:
 
 - `https://arxiv.org/abs/2401.12345` or `https://arxiv.org/abs/2401.12345v2`
 - `https://arxiv.org/pdf/2401.12345`

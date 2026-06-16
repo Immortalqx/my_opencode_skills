@@ -1,19 +1,18 @@
 ---
 name: arxiv
 description: Search, download, and summarize academic papers from arXiv. Use when the user says "search arxiv", "download paper", "fetch arxiv", "arxiv search", "get paper pdf", or wants to find and save papers from arXiv to the local paper library.
-argument-hint: <query-or-arxiv-id> [flags]
 allowed-tools: Bash(python *)
 ---
 
 # arXiv Paper Search & Download
 
-Search topic or arXiv paper ID: $ARGUMENTS
+Search topic or arXiv paper ID: the user's most recent request
 
 ## Constants
 
 - **PAPER_DIR** - Local directory to save downloaded PDFs. Default: `papers/` in the current project directory.
 - **MAX_RESULTS = 10** - Default number of search results.
-- **FETCH_SCRIPT** - `${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py` — the helper script bundled with this skill. Use the `${CLAUDE_SKILL_DIR}` variable so the path works whether the skill is installed at `~/.claude/skills/arxiv/` or `.claude/skills/arxiv/`.
+- **FETCH_SCRIPT** - `@@SKILL_DIR@@/scripts/arxiv_fetch.py` — the helper script bundled with this skill. Use the `@@SKILL_DIR@@` variable so the path works whether the skill is installed at `~/.claude/skills/arxiv/` or `.claude/skills/arxiv/`.
 
 Overrides can be appended to arguments:
 
@@ -26,7 +25,7 @@ Overrides can be appended to arguments:
 
 ### Step 1: Parse Arguments
 
-Parse `$ARGUMENTS` for directives:
+Parse `the user's most recent request` for directives:
 
 - **Query or ID**: main search term or a bare arXiv ID such as `2301.07041` or `cs/0601001`.
 - **`- max: N`**: override `MAX_RESULTS`.
@@ -38,10 +37,10 @@ If the argument matches an arXiv ID pattern (`YYMM.NNNNN` or `category/NNNNNNN`)
 
 ### Step 2: Locate the Helper Script
 
-Prefer the helper bundled with this skill. Use `${CLAUDE_SKILL_DIR}` to resolve the path so it works regardless of install location:
+Prefer the helper bundled with this skill. Use `@@SKILL_DIR@@` to resolve the path so it works regardless of install location:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py" --help
+python "@@SKILL_DIR@@/scripts/arxiv_fetch.py" --help
 ```
 
 If the helper script is unavailable in an unusual install, fall back to the inline arXiv Atom API snippets below.
@@ -51,7 +50,7 @@ If the helper script is unavailable in an unusual install, fall back to the inli
 With the helper script:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py" search "QUERY" --max MAX_RESULTS
+python "@@SKILL_DIR@@/scripts/arxiv_fetch.py" search "QUERY" --max MAX_RESULTS
 ```
 
 Fallback inline Python:
@@ -105,7 +104,7 @@ Present results as a compact table:
 When a single paper ID is requested:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py" search "id:ARXIV_ID" --max 1
+python "@@SKILL_DIR@@/scripts/arxiv_fetch.py" search "id:ARXIV_ID" --max 1
 ```
 
 Display title, all authors, categories, full abstract, published date, PDF URL, and abstract URL.
@@ -115,7 +114,7 @@ Display title, all authors, categories, full abstract, published date, PDF URL, 
 When download is requested, for each paper ID:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/arxiv_fetch.py" download ARXIV_ID --dir PAPER_DIR
+python "@@SKILL_DIR@@/scripts/arxiv_fetch.py" download ARXIV_ID --dir PAPER_DIR
 ```
 
 The helper script:

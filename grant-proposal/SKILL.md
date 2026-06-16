@@ -1,14 +1,13 @@
 ---
 name: grant-proposal
 description: Draft a structured grant proposal from research ideas and literature. Supports KAKENHI (Japan), NSF (US), NSFC (China, including 面上/青年/优青/杰青/海外优青/重点), ERC (EU), DFG (Germany), SNSF (Switzerland), ARC (Australia), NWO (Netherlands), and generic formats. Use when the user says "write grant", "grant proposal", 申請書, 科研費, 基金申请, 写基金, "NSF proposal", or wants to turn research ideas into a funding application.
-argument-hint: <research-direction> [agency] [subtype] [language]
 allowed-tools: WebSearch WebFetch Read Write Edit Glob
 when_to_use: The skill assembles positioning, gap, aims, timeline, risks, PI background, and agency-specific sections; stops at major planning checkpoints unless the user explicitly asks for a one-shot full draft.
 ---
 
 # Grant Proposal
 
-Draft a grant proposal based on: **$ARGUMENTS**
+Draft a grant proposal based on: **the user's most recent request**
 
 ## Standalone Scope
 
@@ -49,7 +48,7 @@ Supported grant types:
 
 Read only what is useful for the requested proposal:
 
-1. The research idea, draft, or direction from `$ARGUMENTS`.
+1. The research idea, draft, or direction from `the user's most recent request`.
 2. Local files that look relevant, for example:
    - `IDEA_REPORT.md`, `FINAL_PROPOSAL.md`, `EXPERIMENT_PLAN.md`
    - `NARRATIVE_REPORT.md`, `STORY.md`, `literature.md`, `survey.md`

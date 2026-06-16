@@ -1,7 +1,6 @@
 ---
 name: update-source-map
 description: Create or update a structured source map (Markdown + JSON) for any project directory. Use when the user wants to (1) index an unfamiliar workspace before doing work in it, (2) refresh a stale source map after files are added, removed, or renamed, (3) prepare quick navigation context for a multi-turn task that touches many files, or (4) preserve a reusable structured inventory of the project. Auto-detects whether to create a new map or update an existing one based on the presence of `x_temp/SOURCE_MAP.md` or `SOURCE_MAP.md` at the workspace root. Outputs are human-readable Markdown for navigation and structured JSON for programmatic queries. Curated file summaries in a separate JSON file persist across regenerations.
-argument-hint: <workspace-root> [flags]
 allowed-tools: Bash(python3 *) Read Write Edit Glob
 when_to_use: The skill always produces Markdown + JSON, preserves curated_summaries across regenerations, and reads PDF metadata only (no PDF content). It auto-detects create vs update by checking for existing source-map artifacts and runs a 7-point verify checklist after building.
 ---
@@ -22,7 +21,7 @@ Do **not** trigger for: code refactoring, single-file edits, paper reading, or t
 
 ### Step 1 — Decide mode (auto-detect)
 
-Run `${CLAUDE_SKILL_DIR}/scripts/detect_existing.py <workspace_root>` to decide between **create** and **update** mode. Detection priority:
+Run `@@SKILL_DIR@@/scripts/detect_existing.py <workspace_root>` to decide between **create** and **update** mode. Detection priority:
 
 1. `<workspace>/x_temp/SOURCE_MAP.md` + `x_temp/source_map.json` → update
 2. `<workspace>/SOURCE_MAP.md` + `source_map.json` → update
@@ -64,7 +63,7 @@ Two equivalent options:
 
 **Option A — one-shot CLI** (recommended for simple cases):
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/regenerate.py" <workspace_root> \
+python3 "@@SKILL_DIR@@/scripts/regenerate.py" <workspace_root> \
     [--output-dir x_temp] \
     [--force-mode create|update] \
     [--exclude "extra_dir1,extra_dir2"] \
@@ -74,12 +73,12 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/regenerate.py" <workspace_root> \
 **Option B — modular** (use when intermediate inspection is useful):
 ```bash
 # 1. Scan
-python3 "${CLAUDE_SKILL_DIR}/scripts/scan_workspace.py" <workspace_root> \
+python3 "@@SKILL_DIR@@/scripts/scan_workspace.py" <workspace_root> \
     --output <workspace>/x_temp/file_inventory.jsonl \
     [--exclude "..."]
 
 # 2. Build
-python3 "${CLAUDE_SKILL_DIR}/scripts/build_source_map.py" \
+python3 "@@SKILL_DIR@@/scripts/build_source_map.py" \
     --inventory <workspace>/x_temp/file_inventory.jsonl \
     --md-out <workspace>/x_temp/SOURCE_MAP.md \
     --json-out <workspace>/x_temp/source_map.json \

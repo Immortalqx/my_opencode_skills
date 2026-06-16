@@ -1,13 +1,12 @@
 ---
 name: research-wiki
 description: "Persistent research knowledge base that accumulates papers, ideas, experiments, claims, and their relationships across a project. Inspired by Karpathy's LLM Wiki pattern. Use when user says \"知识库\", \"research wiki\", \"add paper\", \"wiki query\", \"查知识库\", or wants to build/query a persistent field map."
-argument-hint: <subcommand> [args]
 allowed-tools: Bash(python *) Bash(bash *) Read Write Edit Glob
 ---
 
 # Research Wiki: Persistent Research Knowledge Base
 
-Subcommand: **$ARGUMENTS**
+Subcommand: **the user's most recent request**
 
 ## Overview
 
@@ -80,17 +79,17 @@ Add a paper to the wiki with the bundled helper:
 
 ```bash
 # arXiv-based ingest
-python "${CLAUDE_SKILL_DIR}/scripts/research_wiki.py" ingest_paper research-wiki/ \
+python "@@SKILL_DIR@@/scripts/research_wiki.py" ingest_paper research-wiki/ \
     --arxiv-id 2501.12345 --thesis "One-line claim from abstract."
 
 # manual metadata ingest
-python "${CLAUDE_SKILL_DIR}/scripts/research_wiki.py" ingest_paper research-wiki/ \
+python "@@SKILL_DIR@@/scripts/research_wiki.py" ingest_paper research-wiki/ \
     --title "Attention Is All You Need" \
     --authors "Ashish Vaswani, Noam Shazeer" \
     --year 2017 --venue "NeurIPS"
 
 # add an explicit relationship after ingest
-python "${CLAUDE_SKILL_DIR}/scripts/research_wiki.py" add_edge research-wiki/ \
+python "@@SKILL_DIR@@/scripts/research_wiki.py" add_edge research-wiki/ \
     --from "paper:vaswani2017_attention_all_you" \
     --to "paper:chen2025_factorized_gap" \
     --type "extends" --evidence "Section 3.2 adapts the encoder block."
@@ -111,10 +110,10 @@ The helper performs:
 Batch backfill one or more arXiv IDs:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/research_wiki.py" sync research-wiki/ \
+python "@@SKILL_DIR@@/scripts/research_wiki.py" sync research-wiki/ \
     --arxiv-ids 2310.06770,1706.03762
 
-python "${CLAUDE_SKILL_DIR}/scripts/research_wiki.py" sync research-wiki/ --from-file ids.txt
+python "@@SKILL_DIR@@/scripts/research_wiki.py" sync research-wiki/ --from-file ids.txt
 ```
 
 Use this when papers were discussed earlier but not yet ingested. `sync` does not depend on hidden hooks or session traces; it only ingests the IDs you explicitly provide.
@@ -236,7 +235,7 @@ Edges: 64
 If you want a rough coverage check for arXiv IDs mentioned in local project artifacts, run:
 
 ```bash
-bash "${CLAUDE_SKILL_DIR}/scripts/verify_wiki_coverage.sh" research-wiki/
+bash "@@SKILL_DIR@@/scripts/verify_wiki_coverage.sh" research-wiki/
 ```
 
 This is diagnostic only. It should report gaps, not block the wiki.

@@ -1,14 +1,13 @@
 ---
 name: mock-review
 description: Mock peer-review workflow for manuscript authors preparing conference or journal submissions. Use when the user asks in English or Chinese for mock review, simulated review, rebuttal preparation, reviewer-style critique, or wants a manuscript reviewed against a named venue/journal such as ACM MM, NeurIPS, CVPR, ICLR, ICCV, IEEE journals, or a user-provided review template. The skill researches official review requirements, optionally extracts user-provided review templates in PDF/Markdown/image/text form, scans PDFs for manuscript artifact risks, studies related literature and experimental baselines, and writes a simulated review for author preparation that must not replace real peer review or impersonate an official reviewer.
-argument-hint: <venue-or-journal> [manuscript-pdf]
 allowed-tools: Bash(python *) WebSearch WebFetch Read Write Edit Glob
 when_to_use: The skill researches official review requirements, optionally extracts user-provided review templates in PDF/Markdown/image/text form, scans PDFs for manuscript artifact risks, studies related literature and experimental baselines, and writes a simulated review for author preparation that must not replace real peer review or impersonate an official reviewer.
 ---
 
 # Mock Review
 
-Target manuscript / venue: `$ARGUMENTS`
+Target manuscript / venue: `the user's most recent request`
 
 ## Core Boundary
 
@@ -27,15 +26,15 @@ Read `references/output-contract.md` before writing the final review.
 
 Use scripts when available:
 
-- `${CLAUDE_SKILL_DIR}/scripts/pdf_safety_scan.py` for hidden text / active-content / prompt-injection-like artifact scans.
-- `${CLAUDE_SKILL_DIR}/scripts/extract_references.py` for an initial references matrix from a PDF.
+- `@@SKILL_DIR@@/scripts/pdf_safety_scan.py` for hidden text / active-content / prompt-injection-like artifact scans.
+- `@@SKILL_DIR@@/scripts/extract_references.py` for an initial references matrix from a PDF.
 
 ## Working Directory Contract
 
 Use the user's requested output location when specified. Otherwise create:
 
 ```text
-temp_claude/
+x_temp/
   venue_requirements.md
   extracted_text/
   scans/
@@ -80,7 +79,7 @@ Use current official sources for the target venue/journal:
 
 If the venue's current review form is hidden or inaccessible, say so and do not invent fields. Use public criteria plus any user-provided template evidence.
 
-Save a concise source-backed summary to `temp_claude/venue_requirements.md`.
+Save a concise source-backed summary to `x_temp/venue_requirements.md`.
 
 ### 3. Extract Optional Review Template
 
@@ -95,7 +94,7 @@ If the user provides a review template as PDF, Markdown, image/screenshot, or te
 Run a manuscript artifact scan on PDFs:
 
 ```bash
-python "${CLAUDE_SKILL_DIR}/scripts/pdf_safety_scan.py" "paper.pdf" --output-dir temp_claude/scans
+python "@@SKILL_DIR@@/scripts/pdf_safety_scan.py" "paper.pdf" --output-dir x_temp/scans
 ```
 
 Check:
@@ -113,7 +112,7 @@ Before reviewing the manuscript, study the field:
 
 1. Extract references:
    ```bash
-   python "${CLAUDE_SKILL_DIR}/scripts/extract_references.py" "paper.pdf" --output temp_claude/metadata/references_matrix.csv --markdown temp_claude/metadata/references_matrix.md
+   python "@@SKILL_DIR@@/scripts/extract_references.py" "paper.pdf" --output x_temp/metadata/references_matrix.csv --markdown x_temp/metadata/references_matrix.md
    ```
 2. Classify references into:
    - directly related work

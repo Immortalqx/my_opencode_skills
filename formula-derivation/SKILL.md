@@ -1,7 +1,6 @@
 ---
 name: formula-derivation
 description: Structure and derive research formulas by clarifying assumptions, picking the invariant object, and separating identities, propositions, approximations, and interpretations. Use when the user wants to 推导公式, derive a theory line, build equations from a problem statement, or turn messy theory notes into a paper-ready derivation skeleton. Not for fully rigorous theorem proving once the claim is already fixed.
-argument-hint: <theory-claim-or-notes>
 ---
 
 # Formula Derivation

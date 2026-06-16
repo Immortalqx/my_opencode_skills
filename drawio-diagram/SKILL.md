@@ -1,7 +1,6 @@
 ---
 name: drawio-diagram
 description: Use when creating research figures, paper posters, academic presentation visuals, or conceptual diagrams as an editable draw.io/diagrams.net draft plus PNG/SVG/PDF exports that pass strict visual QA. Especially for paper figures or posters where the user wants the agent to read source materials, reuse extracted paper images or plots, and produce editable draw.io/SVG/PDF assets that the user can keep editing directly in draw.io.
-argument-hint: <task-or-drawio-path>
 allowed-tools: Bash(python *) Bash(powershell *) Read Write Edit Glob
 ---
 
@@ -59,7 +58,7 @@ For research tasks, first build content from source materials:
 - Read the paper/PDF/slides/notes enough to identify the actual method, problem setting, main claim, experimental evidence, and available figures.
 - Treat user-provided screenshots/images in the conversation as source assets too: inspect them and reuse them when they contain useful paper figures, layouts, plots, or visual examples.
 - Search local folders for `.pdf`, `.pptx`, `.md`, `.png`, `.jpg`, `.jpeg`, `.svg`, `.webp`, and figure asset folders.
-- Run or manually create an asset inventory before sketching. Use `${CLAUDE_SKILL_DIR}/scripts/inventory_assets.py` when possible.
+- Run or manually create an asset inventory before sketching. Use `@@SKILL_DIR@@/scripts/inventory_assets.py` when possible.
 - Extract or reuse relevant visual material:
   - method diagrams
   - robot/camera setup images
@@ -72,7 +71,7 @@ For research tasks, first build content from source materials:
 - For a paper poster, at least one relevant method/result/setup/qualitative asset should be inserted when such assets exist. If none are inserted, justify this explicitly in `qa_notes.md`.
 - If the source paper includes figures that communicate the method, robot/camera setup, dataset, results, ablations, or qualitative examples, those figures have priority over newly invented icons or generic boxes.
 - Keep figure assets as movable draw.io image objects where possible. If programmatic insertion is unreliable, use draw.io desktop or the draw.io browser editor to insert the images, then re-export and inspect.
-- Use `${CLAUDE_SKILL_DIR}/scripts/render_pdf_pages.py` when possible.
+- Use `@@SKILL_DIR@@/scripts/render_pdf_pages.py` when possible.
 
 ## Draw.io Draft Requirements
 
@@ -127,10 +126,10 @@ Only after every item passes may the figure be declared ready.
 
 ## Export
 
-Use `${CLAUDE_SKILL_DIR}/scripts/export_drawio.ps1` when possible:
+Use `@@SKILL_DIR@@/scripts/export_drawio.ps1` when possible:
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File "${CLAUDE_SKILL_DIR}/scripts/export_drawio.ps1" `
+powershell -ExecutionPolicy Bypass -File "@@SKILL_DIR@@/scripts/export_drawio.ps1" `
   -DrawioPath "<image_draft>/sketch.drawio" `
   -OutDir "<image_draft>"
 ```

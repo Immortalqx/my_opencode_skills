@@ -1,13 +1,12 @@
 ---
 name: research-lit
 description: "Search and analyze research papers, find related work, summarize key ideas. Use when user says \"find papers\", \"related work\", \"literature review\", \"what does this paper say\", or needs to understand academic papers."
-argument-hint: <topic> [sources] [arxiv download]
 allowed-tools: Bash(python *) WebSearch WebFetch Read Glob
 ---
 
 # Research Literature Review
 
-Research topic: `$ARGUMENTS`
+Research topic: `the user's most recent request`
 
 ## Purpose
 
@@ -31,7 +30,7 @@ This skill is intentionally standalone. Its default path uses only local PDFs, p
 
 ## Argument Directives
 
-Parse `$ARGUMENTS` for optional directives:
+Parse `the user's most recent request` for optional directives:
 
 - `paper library: <path>`
 - `sources: local`

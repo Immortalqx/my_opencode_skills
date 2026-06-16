@@ -1,14 +1,13 @@
 ---
 name: research-survey-loop
 description: Long-running survey workflow for robotics, embodied AI, computer vision, world models, navigation, manipulation, 3D scene understanding, and adjacent research. Use when the user wants to create or continue a multi-round literature review task on one of these topics.
-argument-hint: <topic-or-task-dir>
 allowed-tools: Bash(python3 *) Read Write Edit Glob WebSearch WebFetch
 when_to_use: The skill maintains stable task documents (task.md, round_log.md, current_task.md, survey.md), searches Nature/Science plus top CV and robotics venues before arXiv, migrates relevant local PDFs from papers/ into task-local sources/, reads PDFs in chunks of at most 10 pages, and incrementally writes a Chinese Markdown survey with relative local citations or web links.
 ---
 
 # Research Survey Loop
 
-Survey topic: `$ARGUMENTS`
+Survey topic: `the user's most recent request`
 
 ## Overview
 
@@ -63,9 +62,9 @@ Use these bundled templates and scripts instead of improvising new file layouts:
 - `assets/round-log-template.md`
 - `assets/current-task-template.md`
 - `assets/survey-template.md`
-- `${CLAUDE_SKILL_DIR}/scripts/init_task.py`
-- `${CLAUDE_SKILL_DIR}/scripts/fetch_sources.py`
-- `${CLAUDE_SKILL_DIR}/scripts/extract_pdf_chunk.py`
+- `@@SKILL_DIR@@/scripts/init_task.py`
+- `@@SKILL_DIR@@/scripts/fetch_sources.py`
+- `@@SKILL_DIR@@/scripts/extract_pdf_chunk.py`
 
 ## Workflow
 
@@ -74,7 +73,7 @@ Use these bundled templates and scripts instead of improvising new file layouts:
 If the task directory does not exist, run:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/init_task.py" "TOPIC" --workspace-root "$PWD"
+python3 "@@SKILL_DIR@@/scripts/init_task.py" "TOPIC" --workspace-root "$PWD"
 ```
 
 If the task already exists, read in this order before doing any new work:
@@ -96,13 +95,13 @@ Default search order is fixed:
 4. arXiv
 5. Local `papers/` pool as supplement, de-dup, or migration source
 
-Use the current agent's web search / fetch capabilities for publisher-first searching. Use `${CLAUDE_SKILL_DIR}/scripts/fetch_sources.py` to normalize downloads and imports into the task directory.
+Use the current agent's web search / fetch capabilities for publisher-first searching. Use `@@SKILL_DIR@@/scripts/fetch_sources.py` to normalize downloads and imports into the task directory.
 
 Typical commands:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/fetch_sources.py" search "TOPIC" --task-dir "survey_tasks/TOPIC-SLUG" --max-per-source 5
-python3 "${CLAUDE_SKILL_DIR}/scripts/fetch_sources.py" download --task-dir "survey_tasks/TOPIC-SLUG" --arxiv-id 2402.07556
+python3 "@@SKILL_DIR@@/scripts/fetch_sources.py" search "TOPIC" --task-dir "survey_tasks/TOPIC-SLUG" --max-per-source 5
+python3 "@@SKILL_DIR@@/scripts/fetch_sources.py" download --task-dir "survey_tasks/TOPIC-SLUG" --arxiv-id 2402.07556
 ```
 
 Search rules:
@@ -120,13 +119,13 @@ Only migrate local PDFs that the current task actually absorbs.
 To move a root-level paper into the task:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/fetch_sources.py" import-local --task-dir "survey_tasks/TOPIC-SLUG" "papers/file.pdf"
+python3 "@@SKILL_DIR@@/scripts/fetch_sources.py" import-local --task-dir "survey_tasks/TOPIC-SLUG" "papers/file.pdf"
 ```
 
 To reuse a paper from another survey task:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/fetch_sources.py" reuse-task-paper --task-dir "survey_tasks/TOPIC-SLUG" --from-task "survey_tasks/OTHER-TASK" "sources/papers/file.pdf"
+python3 "@@SKILL_DIR@@/scripts/fetch_sources.py" reuse-task-paper --task-dir "survey_tasks/TOPIC-SLUG" --from-task "survey_tasks/OTHER-TASK" "sources/papers/file.pdf"
 ```
 
 Migration rules:
@@ -143,7 +142,7 @@ Never read more than 10 PDF pages at once.
 Use:
 
 ```bash
-python3 "${CLAUDE_SKILL_DIR}/scripts/extract_pdf_chunk.py" "survey_tasks/TOPIC-SLUG/sources/papers/file.pdf" --start-page 1 --end-page 10 --json
+python3 "@@SKILL_DIR@@/scripts/extract_pdf_chunk.py" "survey_tasks/TOPIC-SLUG/sources/papers/file.pdf" --start-page 1 --end-page 10 --json
 ```
 
 Rules:
