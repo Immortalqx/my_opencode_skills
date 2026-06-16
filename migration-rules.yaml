@@ -1,0 +1,88 @@
+# Migration rules for my_opencode_skills
+#
+# Two stages:
+#   1. rewrite  — turn specific source paths/strings into @@SKILL_DIR@@ placeholders
+#   2. install  — turn @@SKILL_DIR@@ placeholders into absolute install paths
+#
+# Both stages are driven by the same rule set. The install stage also does an
+# in-skill file scan to substitute any bare `scripts/<file>` / `references/<file>`
+# / `assets/<file>` references the model would need.
+
+version: 1
+
+# =============================================================================
+# REWRITE  — applied in --rewrite mode and as the first pass in --install mode
+# =============================================================================
+rewrite_rules:
+  # Claude Code's ${CLAUDE_SKILL_DIR} env var does not exist in opencode.
+  # Replace with the @@SKILL_DIR@@ placeholder; install stage resolves it.
+  - id: claude-skill-dir-var
+    find: '${CLAUDE_SKILL_DIR}'
+    replace: '@@SKILL_DIR@@'
+    apply_to: ['*.md']
+
+  # $ARGUMENTS is a Claude Code placeholder expanded at invocation time.
+  # opencode reads user input from the conversation, so we ask the model
+  # to do the same explicitly.
+  - id: drop-arguments-placeholder
+    find: '$ARGUMENTS'
+    replace: "the user's most recent request"
+    apply_to: ['*.md']
+
+  # argument-hint is a Claude Code frontmatter field; opencode ignores it.
+  - id: drop-argument-hint
+    regex: '^argument-hint:.*\n'
+    replace: ''
+    apply_to: ['*.md']
+    multiline: true
+
+  # Convention: every skill's scratch/intermediate output lives under x_temp/.
+  # In .md, anything named temp_<word> (a folder path) is renamed to x_temp.
+  # We deliberately do NOT touch .py: Python local vars like `temp_dir` and
+  # `temp_path` (from tempfile.TemporaryDirectory()) are not folder paths.
+  # The negative lookbehind (?<!x_) prevents re-processing x_temp_* patterns
+  # that already exist (idempotency).
+  - id: rename-temp-folders
+    regex: '(?<!x_)\btemp_[a-zA-Z_]+'
+    replace: 'x_temp'
+    apply_to: ['*.md']
+
+  # One specific Python rename: mock-review's pdf_safety_scan.py has
+  # `default="temp_claude/scans"` as an argparse default — that IS a folder
+  # path the model writes to, and needs renaming.
+  - id: rename-temp-claude-in-py
+    find: 'temp_claude'
+    replace: 'x_temp'
+    apply_to: ['*.py']
+
+# =============================================================================
+# INSTALL  — applied only in --install mode (after rewrite_rules)
+# =============================================================================
+install:
+  default_target: '~/.config/opencode/skills'
+  in_skill_subdirs: ['scripts', 'references', 'assets']
+  cross_skill_pattern: '@@SKILL_DIR:(?P<skill>[\\w-]+)@@'
+  single_skill_pattern: '@@SKILL_DIR@@'
+  idem_marker_filename: '.installed.json'
+  cross_skill_strategy: 'soft'      # collect all skill names first, then substitute
+  dry_run_default: true
+  apply_flag: '--apply'
+
+# =============================================================================
+# VALIDATION  — sanity check before install lands any file
+# =============================================================================
+validation:
+  must_be_zero_per_skill_md:
+    - '${CLAUDE_SKILL_DIR}'
+    - '$ARGUMENTS'
+    - 'temp_claude'
+  must_exist_per_skill_md:
+    # every skill that uses @@SKILL_DIR@@ must keep at least one occurrence
+    # (otherwise the substitution would silently produce a no-op install)
+    - '@@SKILL_DIR@@'
+
+# =============================================================================
+# EXCLUDE  — not processed by rewrite or install
+# =============================================================================
+exclude_skills:
+  - skill-creator  # already deleted; kept here defensively
