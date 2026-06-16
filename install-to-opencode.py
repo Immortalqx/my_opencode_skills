@@ -254,9 +254,14 @@ def _apply_rewrite_rules_to_text(text: str, suffix: str, rules: Rules) -> tuple[
     return text, counts
 
 
-def _substitute_in_skill_paths(text: str, skill: Skill) -> tuple[str, int]:
+def _substitute_in_skill_paths(text: str, skill: Skill, suffix: str) -> tuple[str, int]:
     """Replace bare `scripts/<file>`, `references/<file>`, `assets/<file>` with
     `@@SKILL_DIR@@/<that path>` for every file that actually exists in the skill.
+
+    Only operates on .md / .markdown files. Python and other code files might
+    contain the string `scripts/<file>` inside docstring examples (e.g.,
+    `python scripts/foo.py`) and substituting those would produce nonsense
+    in code comments.
 
     Skips occurrences that are part of a cross-skill reference (e.g.,
     `@@SKILL_DIR:other@@/scripts/foo.py`) — those are resolved by the cross-skill
@@ -264,6 +269,8 @@ def _substitute_in_skill_paths(text: str, skill: Skill) -> tuple[str, int]:
 
     Returns (new_text, num_replacements).
     """
+    if suffix.lower() not in (".md", ".markdown"):
+        return text, 0
     files = skill.find_files()
     n_total = 0
 
@@ -345,7 +352,7 @@ def _preview_skill(args: argparse.Namespace) -> int:
     skill_md = skill.path / "SKILL.md"
     text = skill_md.read_text(encoding="utf-8")
     text, _ = _apply_rewrite_rules_to_text(text, ".md", rules)
-    text, _ = _substitute_in_skill_paths(text, skill)
+    text, _ = _substitute_in_skill_paths(text, skill, ".md")
     text, _ = _substitute_cross_skill_refs(text, all_names, target_root)
     text, _ = _substitute_single(text, target_root / skill.name)
     text = re.sub(r"\n?<!-- opencode-migration-warn:.*?-->\n?", "\n", text)
@@ -432,7 +439,7 @@ def _process_skill(
             text, _ = _apply_rewrite_rules_to_text(text, suffix, rules)
 
             # Stage 2a: substitute in-skill file references
-            text, n = _substitute_in_skill_paths(text, skill)
+            text, n = _substitute_in_skill_paths(text, skill, suffix)
             in_subs += n
 
             # Validate SKILL.md BEFORE cross-skill substitution so the
@@ -444,18 +451,26 @@ def _process_skill(
             text, n = _substitute_cross_skill_refs(text, all_skill_names, target_root)
             cross_subs += n
 
-            # Stage 2c: substitute the @@SKILL_DIR@@ placeholder with absolute path
-            text, n = _substitute_single(text, target / skill.name)  # target is target_root/skill
+            # Stage 2c: substitute the @@SKILL_DIR@@ placeholder with absolute path.
+            # `target` is already target_root / skill.name, so we use `target` directly.
+            text, n = _substitute_single(text, target)
             single_subs += n
 
             # Strip sentinel comments that may have been added
             text = re.sub(r"\n?<!-- opencode-migration-warn:.*?-->\n?", "\n", text)
 
             if apply:
-                dst_file.write_text(text, encoding="utf-8")
+                # Compare against the source: if nothing changed, just copy
+                # (preserves original line endings, encoding, and timestamps).
+                # Otherwise write the substituted text with `newline=""` to
+                # avoid Windows CRLF translation of LF-normalized input.
+                src_text = src_file.read_text(encoding="utf-8")
+                if text == src_text:
+                    shutil.copy2(src_file, dst_file)
+                else:
+                    dst_file.write_text(text, encoding="utf-8", newline="")
             # In dry-run we do NOT create any files; the summary tells the user
-            # what would change. A separate `--show-diff SKILL` could be added
-            # later if needed.
+            # what would change.
 
         # Write .installed.json marker
         marker = target / rules.idem_marker_filename
@@ -657,7 +672,7 @@ class TestSubstitution(unittest.TestCase):
             (skill_path / "references" / "bar.md").write_text("# bar")
             skill = Skill(name="fake-skill", path=skill_path)
             text = "use scripts/foo.py and references/bar.md"
-            new, n = _substitute_in_skill_paths(text, skill)
+            new, n = _substitute_in_skill_paths(text, skill, ".md")
             self.assertEqual(n, 2)
             self.assertIn("@@SKILL_DIR@@/scripts/foo.py", new)
             self.assertIn("@@SKILL_DIR@@/references/bar.md", new)
@@ -673,7 +688,7 @@ class TestSubstitution(unittest.TestCase):
             skill = Skill(name="fake-skill", path=skill_path)
             # The `scripts/foo.py` is preceded by @@SKILL_DIR:other@@
             text = "use @@SKILL_DIR:other@@/scripts/foo.py but also scripts/foo.py alone"
-            new, n = _substitute_in_skill_paths(text, skill)
+            new, n = _substitute_in_skill_paths(text, skill, ".md")
             # Only the standalone one should be substituted; the cross-skill one is left alone
             self.assertEqual(n, 1)
             self.assertIn("@@SKILL_DIR:other@@/scripts/foo.py", new)
