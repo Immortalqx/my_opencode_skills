@@ -6,7 +6,7 @@ Personal opencode skills for reusable research, writing, and document workflows.
 
 Each skill is a top-level directory. A valid skill directory contains `SKILL.md` at its root and may also include `scripts/`, `references/`, or `assets/`. There is no nested installable directory and no per-skill README in this repository.
 
-All 28 skills are auto-invocable. opencode picks them up by their `description` triggers, and the user can also invoke any skill explicitly via the `skill` tool. Inside a skill's body, bundled scripts and resources are referenced through the `@@SKILL_DIR@@` and `@@SKILL_DIR:<other-skill>@@` placeholders; the install script substitutes these with absolute install paths.
+All 27 skills are auto-invocable. opencode picks them up by their `description` triggers, and the user can also invoke any skill explicitly via the `skill` tool. Inside a skill's body, bundled scripts and resources are referenced through the `@@SKILL_DIR@@` and `@@SKILL_DIR:<other-skill>@@` placeholders; the install script substitutes these with absolute install paths.
 
 Unless a skill explicitly says otherwise, these skills are designed for standalone, single-agent use: bundled local scripts, local files, and public web access are normal; notification hooks, reviewer-agent chains, and hidden cross-skill hooks are not part of the default path.
 
@@ -14,7 +14,7 @@ Unless a skill explicitly says otherwise, these skills are designed for standalo
 
 Requires **Python 3.10+** with `pyyaml` (`pip install pyyaml`) and **opencode 1.1+** (for `external_directory` auto-allow on skill directories).
 
-### Default install (all 28 skills to `~/.config/opencode/skills/`)
+### Default install (all 27 skills to `~/.config/opencode/skills/`)
 
 ```bash
 git clone <repo-url> my_opencode_skills
@@ -91,7 +91,6 @@ All skills follow one convention: any intermediate output the skill writes to a 
 | [`phd-figure-designer`](./phd-figure-designer/) | Design advisor for the three load-bearing figures of a technical paper: Motivated Example, Solution Overview, and Experimental Results. | User wants feedback on Figure 1 design, a Solution Overview diagram, or experimental-results chart layout. |
 | [`formula-derivation`](./formula-derivation/) | Research-formula derivation workflow that clarifies assumptions and separates identities, propositions, approximations, and interpretations. | Turning messy theory notes into an internal derivation note, paper-style theory draft, or blocker report. |
 | [`grant-proposal`](./grant-proposal/) | Structured grant-proposal drafting from research ideas and literature, with agency-specific and generic formats. | Turning a research direction into a funding application with aims, milestones, feasibility, and outputs. |
-| [`help-me-read`](./help-me-read/) | Deep-read a user-provided PDF and produce a story-driven close-read note with page screenshots, figure explanations, and background context. | Detailed study notes, tutor-style breakdowns, or close reads of lecture decks and academic papers. |
 | [`mmx-cli`](./mmx-cli/) | MiniMax CLI skill for operating the local `mmx` command for text, search, vision, quota, file, and media tasks. | Running an installed local MiniMax CLI directly, especially for bilingual multi-query search and non-interactive JSON workflows. |
 | [`mock-review`](./mock-review/) | Mock peer-review workflow for manuscript authors that studies venue requirements, inspects PDFs, researches related work, and writes simulated reviews. | Pre-submission risk checks, rebuttal preparation, and reviewer-style critique before revising a manuscript. |
 | [`novelty-check`](./novelty-check/) | Research-idea novelty checker that extracts core claims, searches literature, compares closest prior work, and reports novelty risk. | Checking whether a method appears to have already been done before investing implementation time. |
@@ -113,7 +112,7 @@ All skills follow one convention: any intermediate output the skill writes to a 
 
 ## Notes
 
-- All 28 skills are auto-invocable. opencode matches user requests to skill descriptions; the user can also invoke a skill explicitly with the `skill` tool.
+- All 27 skills are auto-invocable. opencode matches user requests to skill descriptions; the user can also invoke a skill explicitly with the `skill` tool.
 - Inside each `SKILL.md`, bundled scripts and resources are referenced through `@@SKILL_DIR@@` (or `@@SKILL_DIR:<other>@@` for cross-skill). The install script substitutes these with the absolute install path so the same source tree works regardless of where it gets installed.
 - These skills encode personal research workflows and do not represent official processes of any venue, journal, or institution.
 - Skills sourced from external repositories keep their original names or use a `phd-` prefix to namespace them: Anthropic skills (no prefix) come from `anthropics/skills`, and the `phd-*` skills come from `HKUSTDial/Supervisor-Skills`. See each skill's `LICENSE.txt` or SKILL.md frontmatter for upstream license terms.
