@@ -14,19 +14,131 @@
 
 依赖：**Python 3.10+**（需要 `pyyaml`，`pip install pyyaml`）和 **opencode 1.1+**（1.1+ 起会对 skill 目录自动放行 `external_directory`）。
 
-### 默认安装（全部 27 个 skills 到 `~/.config/opencode/skills/`）
+### 安装模式
+
+仓库支持 5 个 `--mode` 预设：
+
+| Mode | 默认行为 | 装哪些 | 装到哪 |
+|------|----------|--------|--------|
+| `default`（无 `--mode` 时）| ✅ | 仅 `mmx-cli` | `~/.config/opencode/skills/` |
+| `all` | | 全部 27 个 | `~/.config/opencode/skills/` |
+| `select` | | `--skill` 指定的 | `--target`（默认全局）|
+| `literature-survey` | | 文献调研 bundle（5 个）| **必须**给 `--target` |
+| `mock-review` | | 模拟审稿 bundle（4 个）| **必须**给 `--target` |
+
+#### 速查
 
 ```bash
-git clone <repo-url> my_opencode_skills
-cd my_opencode_skills
+# 1. 默认：只装 mmx-cli 到全局（补足 MiniMax M3 的 websearch 能力）
 python install-to-opencode.py --apply
+
+# 2. 装全部到全局
+python install-to-opencode.py --mode all --apply
+
+# 3. 文献调研项目（5 个 skill）
+python install-to-opencode.py --mode literature-survey --target /path/to/proj/.opencode/skills --apply
+
+# 4. 模拟审稿项目（4 个 skill）
+python install-to-opencode.py --mode mock-review --target /path/to/proj/.opencode/skills --apply
+
+# 5. 装指定 skill 到全局
+python install-to-opencode.py --mode select --skill arxiv --apply
+
+# 6. 装指定 skill 到项目
+python install-to-opencode.py --mode select --skill arxiv --target /path/to/proj/.opencode/skills --apply
 ```
 
-首次安装或更新后，重启 opencode 让新 skill 的 metadata 生效。
+#### 参数优先级
+
+```
+--target  :  CLI  >  mode.target  >  YAML default_target
+--skill   :  CLI  >  mode.skills
+--mode    :  CLI  >  default
+```
+
+CLI 显式提供时一律覆盖 mode 预设。
+
+#### 5 条模式校验（错误信息）
+
+| 触发条件 | 行为 |
+|----------|------|
+| `--skill` 但 `--mode` 不是 `select` | ❌ ERROR |
+| `--mode <preset>` 但给了 `--skill` | ❌ ERROR（`default` / `all` / `literature-survey` / `mock-review` 都不接受 `--skill`）|
+| `--mode select` 但没给 `--skill` | ❌ ERROR（`select` 必须配合 `--skill`）|
+| `--mode literature-survey` 或 `--mode mock-review` 但没给 `--target` | ❌ ERROR（这两个 mode 必须指定项目路径）|
+
+### 通用选项
+
+| 选项 | 说明 |
+|------|------|
+| `--apply` | 实际写盘（默认 dry-run，只打印计划）|
+| `--force` | 整目录 rmtree + 重建（**会删掉 target 里所有文件**，包括你手动加的）|
+| `--preview <SKILL>` | 打印该 skill 装好后的 SKILL.md 到 stdout |
+| `--test` | 跑内置单元测试 |
+| `--skill <name>` | 只能与 `--mode select` 配对（可重复）|
+| `--target <path>` | 装到指定路径（默认取决于 mode）|
+| `--source <path>` | 源仓库路径（默认脚本所在目录）|
+| `--verbose` / `-v` | 详细输出 |
+
+### `--force` 行为说明
+
+- **无 `--force`**：如果 skill 已在 target，**整个 skill skip**。安全但陈旧——source 改了但 target 没刷新。
+- **`--force`**：整目录 rmtree + 重建。等效于 `rsync --delete`：target 里你手动加的文件（不在 source 里的）**会被删**。
+- **日常建议**：先无 `--force` 看摘要，确认无误再加 `--force` 重装。
+
+### 测试清单（删除所有 skill 后逐项验证）
+
+```bash
+# 1. 单元测试（无副作用）
+python install-to-opencode.py --test
+# 预期：Ran 9 tests in ... OK
+
+# 2. 默认 dry-run
+python install-to-opencode.py
+# 预期：mode=default  skills=1 selected: mmx-cli
+
+# 3. 默认 apply
+python install-to-opencode.py --apply
+# 预期：~/.config/opencode/skills/ 下只有 mmx-cli/
+
+# 4. --mode all
+python install-to-opencode.py --mode all --apply
+# 预期：~/.config/opencode/skills/ 下有 27 个 skill 目录
+
+# 5. --mode literature-survey
+python install-to-opencode.py --mode literature-survey --target <项目/.opencode/skills> --apply
+# 预期：项目下 5 个 skill
+
+# 6. --mode mock-review
+python install-to-opencode.py --mode mock-review --target <项目/.opencode/skills> --apply
+# 预期：项目下 4 个 skill
+
+# 7. --mode select 自定义
+python install-to-opencode.py --mode select --skill arxiv --apply
+# 预期：全局 arxiv/
+
+# 8. 同 mode 复跑
+python install-to-opencode.py --mode all --apply
+# 预期：27 个 Skipped (already exists, use --force to overwrite)
+
+# 9. --force 重装
+python install-to-opencode.py --mode all --apply --force
+# 预期：27 个 Installed
+
+# 10. 错误校验
+python install-to-opencode.py --mode all --skill arxiv
+# 预期：ERROR: --skill 仅在 --mode select 下有效
+
+python install-to-opencode.py --mode select
+# 预期：ERROR: --mode select 必须配合 --skill
+
+python install-to-opencode.py --mode literature-survey
+# 预期：ERROR: --mode literature-survey 必须配合 --target
+```
 
 ### 自定义安装位置
 
-opencode 默认还会扫描 `~/.claude/skills/` 和 `~/.agents/skills/`，你也可以装到任意位置并把路径加到 `opencode.json`：
+opencode 默认扫描 6 个位置（项目 + 全局各 3 套），但装到非默认位置需在 `opencode.json` 加 `skills.paths`：
 
 ```bash
 python install-to-opencode.py --target D:/my-skills --apply
@@ -41,26 +153,15 @@ python install-to-opencode.py --target D:/my-skills --apply
 }
 ```
 
-### 只装部分 skill
-
-```bash
-python install-to-opencode.py --skill arxiv --skill drawio-diagram --apply
-```
-
-### 覆盖重装
-
-```bash
-python install-to-opencode.py --force --apply
-```
-
 ### 预览
 
-所有命令默认是 dry-run。去掉 `--apply` 就只会打印计划、不写盘。
+所有命令默认 dry-run。去掉 `--apply` 才写盘。
 
 ```bash
-python install-to-opencode.py                       # 打印安装计划
-python install-to-opencode.py --preview arxiv      # 预览某个 skill 装好后的 SKILL.md
-python install-to-opencode.py --test               # 跑内置单元测试
+python install-to-opencode.py                          # 打印默认模式的安装计划
+python install-to-opencode.py --mode all               # dry-run 全部
+python install-to-opencode.py --preview arxiv           # 打印 arxiv 装好后的 SKILL.md
+python install-to-opencode.py --test                    # 跑单元测试
 ```
 
 ## 路径约定
@@ -70,7 +171,7 @@ python install-to-opencode.py --test               # 跑内置单元测试
 | 占位符 | 含义 | 装好后示例 |
 | --- | --- | --- |
 | `@@SKILL_DIR@@` | 当前 skill 的安装目录 | `C:/Users/<你>/.config/opencode/skills/arxiv` |
-| `@@SKILL_DIR:<name>@@` | 另一个 skill 的安装目录（跨 skill 引用） | `C:/Users/<你>/.config/opencode/skills/arxiv` |
+| `@@SKILL_DIR:<name>@@` | 另一个 skill 的安装目录（跨 skill 引用）| `C:/Users/<你>/.config/opencode/skills/arxiv` |
 
 `SKILL.md` 内的裸 `scripts/<file>`、`references/<file>`、`assets/<file>` 路径，只要对应的文件实际存在于该 skill 目录中，也会被自动替换。
 
@@ -113,10 +214,11 @@ python install-to-opencode.py --test               # 跑内置单元测试
 ## 说明
 
 - 所有 27 个 skills 都是 auto-invocable。opencode 根据 `description` 触发词自动匹配；用户也可以用 `skill` 工具显式调用。本仓库没有任何一个 skill 带有 `disable-model-invocation` 标记。
-- 每个 `SKILL.md` 内部，附带脚本和资源都通过 `@@SKILL_DIR@@`（跨 skill 用 `@@SKILL_DIR:<other>@@`）引用。安装脚本在落地时把这些占位符替换为绝对安装路径，所以同一份源码无论装到 `~/.config/opencode/skills/<skill>/` 还是别的位置都能正常工作。
+- 每个 `SKILL.md` 内部，附带脚本和资源都通过 `@@SKILL_DIR@@`（跨 skill 用 `@@SKILL_DIR:<other>@@`）引用。安装脚本在落地时把这些占位符替换为绝对路径，所以同一份源码无论装到 `~/.config/opencode/skills/<skill>/` 还是别的位置都能正常工作。**这是有意为之**：部分 LLM 客户端（如 MiniMax M3）无法解析 `@@SKILL_DIR@@` 这种相对变量，必须在装好的 `SKILL.md` 里直接拿到绝对路径才能正确定位 skill 自带的脚本和资源。
 - 这些 skills 是个人科研工作流沉淀，不代表任何会议、期刊或机构的官方流程。
 - 从外部仓库引入的 skills 保持原名或加 `phd-` 前缀以标记来源：Anthropic 官方 skills（无前缀）来自 `anthropics/skills` 仓库；`phd-*` 系列来自 `HKUSTDial/Supervisor-Skills` 仓库。各 skill 的上游许可条款见其 `LICENSE.txt` 或 SKILL.md frontmatter。
 - `mmx-cli` 需要本地已经配置好 `mmx` 命令。
 - `drawio-diagram` 面向需要保留可编辑 draw.io 草稿的图示工作流；只有视觉 QA 循环通过后才应宣布图已完成。
 - 使用 `mock-review` 生成的内容应明确标注为 simulated/mock review，不能冒充官方审稿意见。
 - 文献下载和调研应优先使用官方开放页面、arXiv、OpenReview、作者主页等合法可访问来源。
+- 安装脚本会自动剥离 Claude Code 专属的 `allowed-tools: ...` frontmatter 字段。opencode 不识别该字段，保留它只是冗余；剥离后不影响 opencode 行为。同理剥离 `argument-hint:` 和 `$ARGUMENTS` 等 Claude Code 模板占位符。

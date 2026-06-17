@@ -29,13 +29,11 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
-import json
 import re
 import shutil
 import sys
 import unittest
 from collections.abc import Iterable
-from datetime import datetime, timezone
 from pathlib import Path
 
 try:
@@ -92,9 +90,9 @@ class Rules:
     in_skill_subdirs: tuple[str, ...]
     cross_skill_pattern: re.Pattern
     single_skill_pattern: str
-    idem_marker_filename: str
     validation: dict
     exclude_skills: tuple[str, ...]
+    modes: dict[str, dict]
 
     @classmethod
     def load(cls, path: Path) -> Rules:
@@ -117,15 +115,27 @@ class Rules:
             )
 
         cross_pat = re.compile(install["cross_skill_pattern"])
+        modes_raw = data.get("modes", {})
+        # Normalize: ensure every mode has the 5 required keys
+        modes: dict[str, dict] = {}
+        for name, cfg in modes_raw.items():
+            modes[name] = {
+                "description": cfg.get("description", ""),
+                "target": cfg.get("target"),
+                "skills": cfg.get("skills"),
+                "require_target": bool(cfg.get("require_target", False)),
+                "allow_skill": bool(cfg.get("allow_skill", False)),
+                "requires_skill": bool(cfg.get("requires_skill", False)),
+            }
         return cls(
             rewrite_rules=rules,
             install_target=install["default_target"],
             in_skill_subdirs=tuple(install["in_skill_subdirs"]),
             cross_skill_pattern=cross_pat,
             single_skill_pattern=install["single_skill_pattern"],
-            idem_marker_filename=install["idem_marker_filename"],
             validation=validation,
             exclude_skills=tuple(data.get("exclude_skills", [])),
+            modes=modes,
         )
 
 
@@ -472,18 +482,6 @@ def _process_skill(
             # In dry-run we do NOT create any files; the summary tells the user
             # what would change.
 
-        # Write .installed.json marker
-        marker = target / rules.idem_marker_filename
-        marker_data = {
-            "installed_at": datetime.now(timezone.utc).isoformat(),
-            "source_skill_path": str(skill.path),
-            "target_path": str(target),
-            "in_skill_substitutions": in_subs,
-            "cross_skill_substitutions": cross_subs,
-            "placeholder_substitutions": single_subs,
-        }
-        if apply:
-            marker.write_text(json.dumps(marker_data, indent=2), encoding="utf-8")
         return "installed", in_subs, cross_subs, single_subs
 
     except Exception as e:
@@ -549,7 +547,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--source", type=Path, default=REPO_ROOT,
                    help="source repo root (default: script's parent dir)")
     p.add_argument("--target", type=str, default=None,
-                   help="install root (default: ~/.config/opencode/skills)")
+                   help="install root (default: mode-dependent, usually ~/.config/opencode/skills)")
     p.add_argument("--rules", type=Path, default=RULES_PATH,
                    help="path to migration-rules.yaml")
     p.add_argument("--rewrite", action="store_true",
@@ -557,7 +555,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--install", dest="do_install", action="store_true",
                    help="install mode (default; explicit for clarity)")
     p.add_argument("--skill", action="append", default=None,
-                   help="restrict to one skill (can repeat)")
+                   help="restrict to one skill (can repeat). Only valid with --mode select.")
     p.add_argument("--force", action="store_true",
                    help="overwrite existing target skill dir")
     p.add_argument("--apply", action="store_true",
@@ -568,6 +566,9 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
                    help="run self-tests and exit")
     p.add_argument("--preview", metavar="SKILL", default=None,
                    help="print the post-substitution SKILL.md of <SKILL> to stdout and exit")
+    p.add_argument("--mode", choices=["default", "all", "select", "literature-survey", "mock-review"],
+                   default="default",
+                   help="install mode preset (default: default = only install mmx-cli to global)")
     return p.parse_args(argv)
 
 
@@ -597,9 +598,19 @@ def print_rewrite_summary(results: dict[str, RewriteResult], apply: bool) -> Non
             print(f"  {k}: {v}")
 
 
-def print_install_summary(result: InstallResult, apply: bool, target_root: Path) -> None:
+def print_install_summary(
+    result: InstallResult,
+    apply: bool,
+    target_root: Path,
+    mode_name: str,
+    skill_filter: list[str] | None,
+) -> None:
+    skills_desc = (
+        "all" if skill_filter is None
+        else f"{len(skill_filter)} selected: {', '.join(skill_filter)}"
+    )
     print(f"\n{'==' * 30}")
-    print(f"INSTALL  target={target_root}  {'(applied)' if apply else '(dry-run)'}")
+    print(f"INSTALL  mode={mode_name}  target={target_root}  skills={skills_desc}  {'(applied)' if apply else '(dry-run)'}")
     print(f"{'==' * 30}")
     print(f"Installed: {len(result.skills_installed)}")
     for s in result.skills_installed:
@@ -727,6 +738,86 @@ def _temp_skill_root():
 # =============================================================================
 
 
+# =============================================================================
+# main
+# =============================================================================
+
+
+def _resolve_mode(
+    args: argparse.Namespace, rules: Rules
+) -> tuple[str, list[str] | None, str]:
+    """Apply --mode preset and run the 5 validation rules. Return (target_str,
+    skill_filter, mode_name) for install_all() to consume.
+
+    Validation rules (in order):
+      1. --skill requires --mode select (no implicit promotion)
+      2. mode does not allow --skill  (catches --mode all --skill foo etc.)
+      3. mode requires --skill         (catches --mode select without --skill)
+      4. mode requires --target        (catches --mode literature-survey w/o --target)
+      5. target resolution: --target > mode preset > rules.install_target
+      6. skill filter resolution: --skill > mode preset; '~' / null handled
+    """
+    # Rule 1: --skill must be paired with --mode select
+    if args.skill and args.mode != "select":
+        print(
+            f"error: --skill 仅在 --mode select 下有效（当前 --mode {args.mode}）",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    if args.mode not in rules.modes:
+        # Defensive: argparse already constrains this, but YAML could be edited
+        print(f"error: unknown --mode {args.mode!r}", file=sys.stderr)
+        sys.exit(2)
+
+    mode_cfg = rules.modes[args.mode]
+
+    # Rule 2: mode forbids --skill
+    if not mode_cfg["allow_skill"] and args.skill:
+        print(
+            f"error: --mode {args.mode} 不允许 --skill", file=sys.stderr
+        )
+        sys.exit(2)
+
+    # Rule 3: mode requires --skill
+    if mode_cfg["requires_skill"] and not args.skill:
+        print(
+            f"error: --mode {args.mode} 必须配合 --skill <name>（可重复）",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    # Rule 4: mode requires --target
+    if mode_cfg["require_target"] and not args.target:
+        print(
+            f"error: --mode {args.mode} 必须配合 --target <path> 指定项目目录",
+            file=sys.stderr,
+        )
+        sys.exit(2)
+
+    # Rule 5: target resolution
+    if args.target:
+        target_str = args.target
+    elif mode_cfg["target"]:
+        target_str = mode_cfg["target"]
+    else:
+        # Should be unreachable given rule 4
+        target_str = rules.install_target
+
+    # Rule 6: skill filter resolution
+    if mode_cfg["skills"] is None:
+        # Skills come from --skill (select mode); args.skill is guaranteed non-empty
+        # by rule 3, but keep a defensive fallback.
+        skill_filter = list(args.skill) if args.skill else None
+    elif mode_cfg["skills"] == "~":
+        # '~' = all discovered skills
+        skill_filter = None
+    else:
+        skill_filter = list(mode_cfg["skills"])
+
+    return target_str, skill_filter, args.mode
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
 
@@ -758,18 +849,21 @@ def main(argv: list[str] | None = None) -> int:
         print_rewrite_summary(results, args.apply)
         return 0
 
+    # Resolve mode preset (5 validation rules + target/skills resolution)
+    target_str, skill_filter, mode_name = _resolve_mode(args, rules)
+
     # default: install
     result = install_all(
         source=args.source,
-        target_arg=args.target,
+        target_arg=target_str,
         rules=rules,
         apply=args.apply,
         force=args.force,
-        skill_filter=args.skill,
+        skill_filter=skill_filter,
         verbose=args.verbose,
     )
-    target_root = Path(args.target).expanduser() if args.target else Path(rules.install_target).expanduser()
-    print_install_summary(result, args.apply, target_root)
+    target_root = Path(target_str).expanduser()
+    print_install_summary(result, args.apply, target_root, mode_name, skill_filter)
     return 0 if not result.skills_failed else 1
 
 

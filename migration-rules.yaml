@@ -36,6 +36,16 @@ rewrite_rules:
     apply_to: ['*.md']
     multiline: true
 
+  # allowed-tools is a Claude Code frontmatter field that constrains the model's
+  # tool set; opencode uses a different mechanism (`permission` blocks in
+  # opencode.json and per-agent frontmatter). Stripping the line avoids noise
+  # in the installed SKILL.md without affecting opencode behavior.
+  - id: strip-allowed-tools
+    regex: '^allowed-tools:.*\n'
+    replace: ''
+    apply_to: ['*.md']
+    multiline: true
+
   # Convention: every skill's scratch/intermediate output lives under x_temp/.
   # In .md, anything named temp_<word> (a folder path) is renamed to x_temp.
   # We deliberately do NOT touch .py: Python local vars like `temp_dir` and
@@ -63,7 +73,6 @@ install:
   in_skill_subdirs: ['scripts', 'references', 'assets']
   cross_skill_pattern: '@@SKILL_DIR:(?P<skill>[\\w-]+)@@'
   single_skill_pattern: '@@SKILL_DIR@@'
-  idem_marker_filename: '.installed.json'
   cross_skill_strategy: 'soft'      # collect all skill names first, then substitute
   dry_run_default: true
   apply_flag: '--apply'
@@ -76,6 +85,7 @@ validation:
     - '${CLAUDE_SKILL_DIR}'
     - '$ARGUMENTS'
     - 'temp_claude'
+    - 'allowed-tools'
   must_exist_per_skill_md:
     # every skill that uses @@SKILL_DIR@@ must keep at least one occurrence
     # (otherwise the substitution would silently produce a no-op install)
@@ -86,3 +96,51 @@ validation:
 # =============================================================================
 exclude_skills:
   - skill-creator  # already deleted; kept here defensively
+
+# =============================================================================
+# MODES — install mode presets
+#
+# Each mode bundles (target, skills, validation rules) into one named preset.
+# Use `--mode <name>` to pick a preset; `--target` and `--skill` can still
+# override the preset's defaults (subject to the validation rules below).
+#
+# Path rule: `target` MUST be either `null` (caller must pass --target) or a
+# string starting with `~` so the YAML never contains a user-specific absolute
+# path. The repo is shared on GitHub; no machine paths leak in here.
+# =============================================================================
+modes:
+  default:
+    description: "只装 mmx-cli 到 opencode 全局 skills 目录"
+    target: '~/.config/opencode/skills'
+    skills: ['mmx-cli']
+    require_target: false
+    allow_skill: false
+
+  all:
+    description: "装全部 skill 到 opencode 全局 skills 目录"
+    target: '~/.config/opencode/skills'
+    skills: '~'                  # '~' = 全部发现的 skill
+    require_target: false
+    allow_skill: false
+
+  select:
+    description: "只装 --skill 指定的 skill 到 target（target 可省，默认全局）"
+    target: '~/.config/opencode/skills'
+    skills: null                 # 强制从 --skill 取
+    require_target: false
+    allow_skill: true
+    requires_skill: true
+
+  literature-survey:
+    description: "装文献调研 bundle 到指定项目目录"
+    target: null                 # 强制从 --target 取
+    skills: [alphaxiv, arxiv, drawio-diagram, research-lit, research-survey-loop]
+    require_target: true
+    allow_skill: false
+
+  mock-review:
+    description: "装模拟审稿 bundle 到指定项目目录"
+    target: null
+    skills: [alphaxiv, arxiv, research-lit, mock-review]
+    require_target: true
+    allow_skill: false
