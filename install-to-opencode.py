@@ -497,8 +497,15 @@ def install_all(
     force: bool,
     skill_filter: list[str] | None,
     verbose: bool,
+    wipe_target: bool = False,
 ) -> InstallResult:
     target_root = Path(target_arg).expanduser() if target_arg else Path(rules.install_target).expanduser()
+
+    if wipe_target and apply and target_root.exists():
+        if verbose:
+            print(f"wiping target_root: {target_root}", file=sys.stderr)
+        shutil.rmtree(target_root)
+
     skills = discover_skills(source, rules.exclude_skills)
     if skill_filter:
         wanted = set(skill_filter)
@@ -557,7 +564,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--skill", action="append", default=None,
                    help="restrict to one skill (can repeat). Only valid with --mode select.")
     p.add_argument("--force", action="store_true",
-                   help="overwrite existing target skill dir")
+                   help="overwrite existing target skill dir (per-skill)")
+    p.add_argument("--wipe-target", action="store_true",
+                   help="wipe target_root before installing (use with --apply). "
+                        "Intended for per-project installs; do not point at "
+                        "a global skill dir (~/.config/opencode/skills).")
     p.add_argument("--apply", action="store_true",
                    help="actually write files (default: dry-run)")
     p.add_argument("--verbose", "-v", action="store_true",
@@ -861,6 +872,7 @@ def main(argv: list[str] | None = None) -> int:
         force=args.force,
         skill_filter=skill_filter,
         verbose=args.verbose,
+        wipe_target=args.wipe_target,
     )
     target_root = Path(target_str).expanduser()
     print_install_summary(result, args.apply, target_root, mode_name, skill_filter)
