@@ -92,12 +92,6 @@ validation:
     - '@@SKILL_DIR@@'
 
 # =============================================================================
-# EXCLUDE  — not processed by rewrite or install
-# =============================================================================
-exclude_skills:
-  - skill-creator  # already deleted; kept here defensively
-
-# =============================================================================
 # MODES — install mode presets
 #
 # Each mode bundles (target, skills, validation rules) into one named preset.
