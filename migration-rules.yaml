@@ -128,13 +128,13 @@ modes:
   literature-survey:
     description: "装文献调研 bundle 到指定项目目录"
     target: null                 # 强制从 --target 取
-    skills: [alphaxiv, arxiv, drawio-diagram, research-lit, research-survey-loop]
+    skills: [alphaxiv, arxiv, drawio-diagram, paper-reading, research-lit, research-survey-loop]
     require_target: true
     allow_skill: false
 
   mock-review:
     description: "装模拟审稿 bundle 到指定项目目录"
     target: null
-    skills: [alphaxiv, arxiv, research-lit, mock-review]
+    skills: [alphaxiv, arxiv, paper-reading, research-lit, mock-review]
     require_target: true
     allow_skill: false
