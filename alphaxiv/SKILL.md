@@ -1,7 +1,6 @@
 ---
 name: alphaxiv
 description: Quick single-paper lookup via AlphaXiv LLM-optimized summaries with tiered source fallback. Use when the user wants to explain one arXiv paper, asks to summarize a paper, pastes an arXiv or AlphaXiv URL, or provides a bare arXiv ID. Not intended for broad literature search.
-allowed-tools: WebFetch Bash
 ---
 
 # AlphaXiv Paper Lookup

@@ -1,7 +1,6 @@
 ---
 name: research-wiki
 description: "Persistent research knowledge base that accumulates papers, ideas, experiments, claims, and their relationships across a project. Inspired by Karpathy's LLM Wiki pattern. Use when user says \"知识库\", \"research wiki\", \"add paper\", \"wiki query\", \"查知识库\", or wants to build/query a persistent field map."
-allowed-tools: Bash(python *) Bash(bash *) Read Write Edit Glob
 ---
 
 # Research Wiki: Persistent Research Knowledge Base

@@ -1,7 +1,6 @@
 ---
 name: research-lit
 description: "Search and analyze research papers, find related work, summarize key ideas. Use when user says \"find papers\", \"related work\", \"literature review\", \"what does this paper say\", or needs to understand academic papers."
-allowed-tools: Bash(python *) WebSearch WebFetch Read Glob
 ---
 
 # Research Literature Review

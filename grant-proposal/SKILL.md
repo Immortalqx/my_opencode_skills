@@ -1,8 +1,6 @@
 ---
 name: grant-proposal
 description: Draft a structured grant proposal from research ideas and literature. Supports KAKENHI (Japan), NSF (US), NSFC (China, including 面上/青年/优青/杰青/海外优青/重点), ERC (EU), DFG (Germany), SNSF (Switzerland), ARC (Australia), NWO (Netherlands), and generic formats. Use when the user says "write grant", "grant proposal", 申請書, 科研費, 基金申请, 写基金, "NSF proposal", or wants to turn research ideas into a funding application.
-allowed-tools: WebSearch WebFetch Read Write Edit Glob
-when_to_use: The skill assembles positioning, gap, aims, timeline, risks, PI background, and agency-specific sections; stops at major planning checkpoints unless the user explicitly asks for a one-shot full draft.
 ---
 
 # Grant Proposal
