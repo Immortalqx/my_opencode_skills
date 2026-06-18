@@ -24,7 +24,7 @@
 | `all` | | 全部 29 个 | `~/.config/opencode/skills/` |
 | `select` | | `--skill` 指定的 | `--target`（默认全局）|
 | `literature-survey` | | 文献调研 bundle（6 个）| **必须**给 `--target` |
-| `mock-review` | | 模拟审稿 bundle（5 个）| **必须**给 `--target` |
+| `mock-review` | | 模拟审稿 bundle（4 个）| **必须**给 `--target` |
 
 #### 速查
 
@@ -38,7 +38,7 @@ python install-to-opencode.py --mode all --apply
 # 3. 文献调研项目（6 个 skill）
 python install-to-opencode.py --mode literature-survey --target /path/to/proj/.opencode/skills --apply
 
-# 4. 模拟审稿项目（5 个 skill）
+# 4. 模拟审稿项目（4 个 skill）
 python install-to-opencode.py --mode mock-review --target /path/to/proj/.opencode/skills --apply
 
 # 5. 装指定 skill 到全局
@@ -111,7 +111,7 @@ python install-to-opencode.py --mode literature-survey --target <项目/.opencod
 
 # 6. --mode mock-review
 python install-to-opencode.py --mode mock-review --target <项目/.opencode/skills> --apply
-# 预期：项目下 5 个 skill
+# 预期：项目下 4 个 skill
 
 # 7. --mode select 自定义
 python install-to-opencode.py --mode select --skill arxiv --apply

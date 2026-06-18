@@ -24,7 +24,7 @@ Five `--mode` presets are supported:
 | `all` | | All 29 skills | `~/.config/opencode/skills/` |
 | `select` | | Those given by `--skill` | `--target` (defaults to global) |
 | `literature-survey` | | Literature survey bundle (6) | **`--target` required** |
-| `mock-review` | | Mock review bundle (5) | **`--target` required** |
+| `mock-review` | | Mock review bundle (4) | **`--target` required** |
 
 #### Quick reference
 
@@ -38,7 +38,7 @@ python install-to-opencode.py --mode all --apply
 # 3. Literature survey project (6 skills)
 python install-to-opencode.py --mode literature-survey --target /path/to/proj/.opencode/skills --apply
 
-# 4. Mock review project (5 skills)
+# 4. Mock review project (4 skills)
 python install-to-opencode.py --mode mock-review --target /path/to/proj/.opencode/skills --apply
 
 # 5. Install specific skill to global
