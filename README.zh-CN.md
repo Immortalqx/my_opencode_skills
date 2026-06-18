@@ -6,7 +6,7 @@
 
 每个 skill 都是一个顶层目录。合法的 skill 目录会在根部包含 `SKILL.md`，并可以按需附带 `scripts/`、`references/` 或 `assets/`。本仓库不再使用嵌套的可安装目录，也不再保留每个 skill 自己的 README。
 
-所有 27 个 skills 都是 auto-invocable。opencode 会根据 `description` 触发词自动匹配，用户也可以通过 `skill` 工具显式调用。在每个 skill 内部，附带脚本和资源通过 `@@SKILL_DIR@@` 和 `@@SKILL_DIR:<other-skill>@@` 占位符引用；安装脚本会把这些占位符替换成绝对安装路径。
+所有 29 个 skills 都是 auto-invocable。opencode 会根据 `description` 触发词自动匹配，用户也可以通过 `skill` 工具显式调用。在每个 skill 内部，附带脚本和资源通过 `@@SKILL_DIR@@` 和 `@@SKILL_DIR:<other-skill>@@` 占位符引用；安装脚本会把这些占位符替换成绝对安装路径。
 
 除非某个 skill 明确说明，否则这些 skills 默认面向独立、单 agent 使用：可以使用 skill 自带脚本、本地文件和公共网页来源；通知钩子、reviewer agent 链路或隐藏的跨 skill 钩子都不是默认路径。
 
@@ -21,7 +21,7 @@
 | Mode | 默认行为 | 装哪些 | 装到哪 |
 |------|----------|--------|--------|
 | `default`（无 `--mode` 时）| ✅ | 仅 `mmx-cli` | `~/.config/opencode/skills/` |
-| `all` | | 全部 27 个 | `~/.config/opencode/skills/` |
+| `all` | | 全部 29 个 | `~/.config/opencode/skills/` |
 | `select` | | `--skill` 指定的 | `--target`（默认全局）|
 | `literature-survey` | | 文献调研 bundle（5 个）| **必须**给 `--target` |
 | `mock-review` | | 模拟审稿 bundle（4 个）| **必须**给 `--target` |
@@ -103,7 +103,7 @@ python install-to-opencode.py --apply
 
 # 4. --mode all
 python install-to-opencode.py --mode all --apply
-# 预期：~/.config/opencode/skills/ 下有 27 个 skill 目录
+# 预期：~/.config/opencode/skills/ 下有 29 个 skill 目录
 
 # 5. --mode literature-survey
 python install-to-opencode.py --mode literature-survey --target <项目/.opencode/skills> --apply
@@ -119,11 +119,11 @@ python install-to-opencode.py --mode select --skill arxiv --apply
 
 # 8. 同 mode 复跑
 python install-to-opencode.py --mode all --apply
-# 预期：27 个 Skipped (already exists, use --force to overwrite)
+# 预期：29 个 Skipped (already exists, use --force to overwrite)
 
 # 9. --force 重装
 python install-to-opencode.py --mode all --apply --force
-# 预期：27 个 Installed
+# 预期：29 个 Installed
 
 # 10. 错误校验
 python install-to-opencode.py --mode all --skill arxiv
@@ -195,6 +195,7 @@ python install-to-opencode.py --test                    # 跑单元测试
 | [`mmx-cli`](./mmx-cli/) | MiniMax CLI skill，用本地 `mmx` 命令执行文本、搜索、视觉、额度、文件和多媒体任务。 | 直接调用本地已配置好的 MiniMax CLI，尤其适合中英文混合多次搜索，以及 `--quiet`、`--output json`、`--non-interactive` 的非交互式工作流。 |
 | [`mock-review`](./mock-review/) | 给论文作者使用的模拟审稿工作流：调研 venue 要求、检查稿件 PDF、研究相关工作并生成模拟审稿意见。 | 投稿前风险排查、rebuttal 准备、论文修改前的 reviewer-style critique。 |
 | [`novelty-check`](./novelty-check/) | 研究 idea 查新工具：抽取核心 claim，检索文献，对比 closest prior work，并报告 novelty 风险。 | 在投入实现时间前检查一个方法是否看起来已经被做过。 |
+| [`paper-reading`](./paper-reading/) | 深度批判性单篇论文阅读工作流：产出结构化阅读笔记（问题类、设计选择、benchmark、相关工作、综合判断），带裁剪过的图和编号引用。 | 深入、批判性地读懂一篇科研论文；不适合一段话概览，也不适合大范围综述。 |
 | [`pdf`](./pdf/) | 用 pypdf、pdfplumber、reportlab 和 poppler 进行 PDF 合并、拆分、旋转、水印、加密、OCR 和表单填写。 | 任何 .pdf 相关任务，包括读取表格、页面处理和从零创建新 PDF。 |
 | [`phd-benchmark-paper-template`](./phd-benchmark-paper-template/) | 围绕五大支柱（Research Gap、Construction Pipeline、Evaluation Framework、Empirical Findings、可选 Companion Method）的 Benchmark / Evaluation 论文骨架。 | 用户正在写一篇 benchmark 论文，需要从 gap analysis 到 pre-submission checklist 的阶段化工作流。 |
 | [`phd-idea-evaluator`](./phd-idea-evaluator/) | 用五维框架（更高更快更强更省更广）、生命周期匹配、范式跃迁探测和致命缺陷审计给出 reviewer-style 评估。 | 用户有一个 draft idea，想在投入几个月之前知道值不值得做。 |
@@ -207,13 +208,14 @@ python install-to-opencode.py --test                    # 跑单元测试
 | [`research-lit`](./research-lit/) | 独立文献调研工作流：结合本地 PDF、公共网页检索和结构化 arXiv 元数据进行相关工作检索、比较和综合。 | 围绕某个研究主题查找相关工作、梳理论文版图并比较不同方法簇。 |
 | [`research-survey-loop`](./research-survey-loop/) | 长周期文献综述工作流：维护稳定任务文档、按来源优先级搜索论文、分块阅读论文，并逐轮扩展中文综述。 | 机器人、具身智能、计算机视觉、世界模型、导航、操作、3D 感知等方向的持续文献调研。 |
 | [`research-wiki`](./research-wiki/) | 持久化项目级科研知识库，用于沉淀论文、想法、实验、主张以及它们之间的有类型关系。 | 把项目研究记忆固定下来，避免每个 session 都重新搭一遍同一张领域地图。 |
+| [`skill-creator`](./skill-creator/) | 元技能：搭一个新 opencode skill 的脚手架（SKILL.md + 可选 scripts/references/assets），使用正确的 frontmatter，并按 opencode 认可的字段做校验。 | 用户要新建、搭脚手架、重构、或把一个 skill 移植到 opencode。 |
 | [`theme-factory`](./theme-factory/) | 10 套精选的配色与字体主题（Ocean Depths、Sunset Boulevard 等），可套用到任何 artifact。 | 给幻灯片、文档、报告或 HTML 着陆页应用统一专业样式。 |
 | [`update-source-map`](./update-source-map/) | 为任意项目目录创建或更新 agent 可读的 source map，并在刷新时保留手写的 per-file 摘要。 | 处理新的或不熟悉的 workspace、刷新过期索引，或把项目交给另一个 agent。 |
 | [`xlsx`](./xlsx/) | 用 openpyxl 和 pandas 创建、读取、编辑和分析电子表格，含公式重算和错误扫描。 | 任何 .xlsx / .xlsm / .csv / .tsv 任务，例如加列、计算公式、清洗脏表格数据。 |
 
 ## 说明
 
-- 所有 27 个 skills 都是 auto-invocable。opencode 根据 `description` 触发词自动匹配；用户也可以用 `skill` 工具显式调用。本仓库没有任何一个 skill 带有 `disable-model-invocation` 标记。
+- 所有 29 个 skills 都是 auto-invocable。opencode 根据 `description` 触发词自动匹配；用户也可以用 `skill` 工具显式调用。本仓库没有任何一个 skill 带有 `disable-model-invocation` 标记。
 - 每个 `SKILL.md` 内部，附带脚本和资源都通过 `@@SKILL_DIR@@`（跨 skill 用 `@@SKILL_DIR:<other>@@`）引用。安装脚本在落地时把这些占位符替换为绝对路径，所以同一份源码无论装到 `~/.config/opencode/skills/<skill>/` 还是别的位置都能正常工作。**这是有意为之**：部分 LLM 客户端（如 MiniMax M3）无法解析 `@@SKILL_DIR@@` 这种相对变量，必须在装好的 `SKILL.md` 里直接拿到绝对路径才能正确定位 skill 自带的脚本和资源。
 - 这些 skills 是个人科研工作流沉淀，不代表任何会议、期刊或机构的官方流程。
 - 从外部仓库引入的 skills 保持原名或加 `phd-` 前缀以标记来源：Anthropic 官方 skills（无前缀）来自 `anthropics/skills` 仓库；`phd-*` 系列来自 `HKUSTDial/Supervisor-Skills` 仓库。各 skill 的上游许可条款见其 `LICENSE.txt` 或 SKILL.md frontmatter。

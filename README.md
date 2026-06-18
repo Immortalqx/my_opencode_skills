@@ -6,7 +6,7 @@ Personal opencode skills for reusable research, writing, and document workflows.
 
 Each skill is a top-level directory. A valid skill directory contains `SKILL.md` at its root and may also include `scripts/`, `references/`, or `assets/`. There is no nested installable directory and no per-skill README in this repository.
 
-All 27 skills are auto-invocable. opencode picks them up by their `description` triggers, and the user can also invoke any skill explicitly via the `skill` tool. Inside a skill's body, bundled scripts and resources are referenced through the `@@SKILL_DIR@@` and `@@SKILL_DIR:<other-skill>@@` placeholders; the install script substitutes these with absolute install paths.
+All 29 skills are auto-invocable. opencode picks them up by their `description` triggers, and the user can also invoke any skill explicitly via the `skill` tool. Inside a skill's body, bundled scripts and resources are referenced through the `@@SKILL_DIR@@` and `@@SKILL_DIR:<other-skill>@@` placeholders; the install script substitutes these with absolute install paths.
 
 Unless a skill explicitly says otherwise, these skills are designed for standalone, single-agent use: bundled local scripts, local files, and public web access are normal; notification hooks, reviewer-agent chains, and hidden cross-skill hooks are not part of the default path.
 
@@ -21,7 +21,7 @@ Five `--mode` presets are supported:
 | Mode | Default | Skills | Target |
 |------|---------|--------|--------|
 | `default` (when no `--mode` given) | ✅ | `mmx-cli` only | `~/.config/opencode/skills/` |
-| `all` | | All 27 skills | `~/.config/opencode/skills/` |
+| `all` | | All 29 skills | `~/.config/opencode/skills/` |
 | `select` | | Those given by `--skill` | `--target` (defaults to global) |
 | `literature-survey` | | Literature survey bundle (5) | **`--target` required** |
 | `mock-review` | | Mock review bundle (4) | **`--target` required** |
@@ -103,7 +103,7 @@ python install-to-opencode.py --apply
 
 # 4. --mode all
 python install-to-opencode.py --mode all --apply
-# Expected: ~/.config/opencode/skills/ contains 27 skill directories
+# Expected: ~/.config/opencode/skills/ contains 29 skill directories
 
 # 5. --mode literature-survey
 python install-to-opencode.py --mode literature-survey --target <project/.opencode/skills> --apply
@@ -119,11 +119,11 @@ python install-to-opencode.py --mode select --skill arxiv --apply
 
 # 8. Re-run same mode
 python install-to-opencode.py --mode all --apply
-# Expected: 27 Skipped (already exists, use --force to overwrite)
+# Expected: 29 Skipped (already exists, use --force to overwrite)
 
 # 9. --force reinstall
 python install-to-opencode.py --mode all --apply --force
-# Expected: 27 Installed
+# Expected: 29 Installed
 
 # 10. Error validations
 python install-to-opencode.py --mode all --skill arxiv
@@ -195,6 +195,7 @@ All skills follow one convention: any intermediate output the skill writes to a 
 | [`mmx-cli`](./mmx-cli/) | MiniMax CLI skill for operating the local `mmx` command for text, search, vision, quota, file, and media tasks. | Running an installed local MiniMax CLI directly, especially for bilingual multi-query search and non-interactive JSON workflows. |
 | [`mock-review`](./mock-review/) | Mock peer-review workflow for manuscript authors that studies venue requirements, inspects PDFs, researches related work, and writes simulated reviews. | Pre-submission risk checks, rebuttal preparation, and reviewer-style critique before revising a manuscript. |
 | [`novelty-check`](./novelty-check/) | Research-idea novelty checker that extracts core claims, searches literature, compares closest prior work, and reports novelty risk. | Checking whether a method appears to have already been done before investing implementation time. |
+| [`paper-reading`](./paper-reading/) | Deep, critical paper-reading workflow that produces a structured reading note (problem class, design choices, benchmarks, related work, verdict) with cropped figures and numbered citations. | Reading a single research paper deeply and critically; not for one-paragraph overviews or broad surveys. |
 | [`pdf`](./pdf/) | Read, merge, split, rotate, watermark, encrypt, OCR, and fill forms on PDF files using pypdf, pdfplumber, reportlab, and poppler. | Any .pdf-related task, including reading tables, redacting pages, and creating new PDFs from scratch. |
 | [`phd-benchmark-paper-template`](./phd-benchmark-paper-template/) | Benchmark / Evaluation paper scaffolding around five pillars (Research Gap, Construction Pipeline, Evaluation Framework, Empirical Findings, optional Companion Method). | User is writing a benchmark paper and needs a stage-aware workflow from gap analysis to pre-submission checklist. |
 | [`phd-idea-evaluator`](./phd-idea-evaluator/) | Reviewer-style idea evaluation using a five-dimension framework (Higher, Faster, Stronger, Cheaper, Broader), lifecycle matching, paradigm-shift probing, and fatal-flaws audit. | User has a draft research idea and asks whether it is worth pursuing before committing to a paper scope. |
@@ -207,13 +208,14 @@ All skills follow one convention: any intermediate output the skill writes to a 
 | [`research-lit`](./research-lit/) | Standalone literature-review workflow across local PDFs, public web search, and structured arXiv metadata. | Finding related work, mapping a paper landscape, and comparing paper clusters around a research topic. |
 | [`research-survey-loop`](./research-survey-loop/) | Long-running literature survey workflow that maintains stable task documents, searches prioritized sources, reads papers in chunks, and incrementally writes a Chinese survey. | Sustained literature surveys for robotics, embodied AI, computer vision, world models, navigation, manipulation, 3D perception, and adjacent topics. |
 | [`research-wiki`](./research-wiki/) | Persistent project-level research knowledge base for papers, ideas, experiments, claims, and typed relationships. | Building reusable project memory instead of rediscovering the same field map in every session. |
+| [`skill-creator`](./skill-creator/) | Meta-skill that scaffolds a new opencode skill (SKILL.md + optional scripts/references/assets) with proper frontmatter and validates it against opencode's recognized fields. | User asks to create, scaffold, restructure, or port a skill to opencode. |
 | [`theme-factory`](./theme-factory/) | Ten pre-curated color and font themes (Ocean Depths, Sunset Boulevard, etc.) that can be applied to any artifact. | Applying consistent professional styling to slide decks, documents, reports, or HTML landing pages. |
 | [`update-source-map`](./update-source-map/) | Create or update an agent-readable source map for any project directory while preserving hand-curated per-file summaries across regenerations. | Starting work in an unfamiliar workspace, refreshing a stale index, or handing a project to another agent. |
 | [`xlsx`](./xlsx/) | Create, read, edit, and analyze spreadsheets with openpyxl and pandas, including formula recalculation and error scanning. | Any .xlsx / .xlsm / .csv / .tsv task such as adding columns, computing formulas, or cleaning messy tabular data. |
 
 ## Notes
 
-- All 27 skills are auto-invocable. opencode matches user requests to skill descriptions; the user can also invoke a skill explicitly with the `skill` tool.
+- All 29 skills are auto-invocable. opencode matches user requests to skill descriptions; the user can also invoke a skill explicitly with the `skill` tool.
 - Inside each `SKILL.md`, bundled scripts and resources are referenced through `@@SKILL_DIR@@` (or `@@SKILL_DIR:<other>@@` for cross-skill). The install script substitutes these with the absolute install path so the same source tree works regardless of where it gets installed. **This is intentional**: some LLM clients (e.g., MiniMax M3) cannot resolve `@@SKILL_DIR@@`-style relative placeholders, so the installed `SKILL.md` must embed absolute paths for the skill's bundled scripts and resources to be locatable.
 - These skills encode personal research workflows and do not represent official processes of any venue, journal, or institution.
 - Skills sourced from external repositories keep their original names or use a `phd-` prefix to namespace them: Anthropic skills (no prefix) come from `anthropics/skills`, and the `phd-*` skills come from `HKUSTDial/Supervisor-Skills`. See each skill's `LICENSE.txt` or SKILL.md frontmatter for upstream license terms.
