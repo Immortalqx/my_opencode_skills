@@ -135,6 +135,6 @@ modes:
   mock-review:
     description: "装模拟审稿 bundle 到指定项目目录"
     target: null
-    skills: [alphaxiv, arxiv, paper-reading, research-lit, mock-review]
+    skills: [alphaxiv, arxiv, research-lit, mock-review]
     require_target: true
     allow_skill: false
