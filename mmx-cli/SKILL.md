@@ -1,11 +1,23 @@
 ---
 name: mmx-cli
-description: Use mmx to generate text, images, video, speech, and music via the MiniMax AI platform. Use when the user wants to create media content, chat with MiniMax models, perform web search, or manage MiniMax API resources from the terminal.
+description: Use mmx for web search, image / video / speech / music generation, and admin via the MiniMax AI platform. Do NOT use mmx text chat — text generation is the agent's own responsibility. Default command is `mmx search query`; other generation commands require the user to explicitly request them in the current message.
 ---
 
 # MiniMax CLI — Agent Skill Guide
 
-Use `mmx` to generate text, images, video, speech, music, and perform web search via the MiniMax AI platform.
+Use `mmx` to generate images, video, speech, music, and perform web search via the MiniMax AI platform.
+
+## Hard Constraints
+
+These rules are absolute. There are no exceptions driven by user phrasing.
+
+1. **`mmx text chat` is forbidden, in every situation.** Do not invoke it for chat, completion, translation, summarization, rewriting, coding help, or any other text task. The agent itself is the text generator. This includes "user asked for a poem" — answer it in your own reply, do not shell out to mmx.
+2. **Default command is `mmx search query`.** If the user has not asked for anything more specific and web research will help, this is the only mmx command you may run by default.
+3. **Every other generation command is opt-in.** `image generate`, `video generate`, `speech synthesize`, `music generate`, `music cover`, and `vision describe` may only run when the user explicitly asks for them in the current message. Phrasing like "make me a picture" or "generate an image" without naming `mmx` is **not** explicit — ask the user to confirm or have them paste the exact command they want.
+4. **`quota show`, `auth *`, `config *`, `update`** may be used for housekeeping as needed (e.g. checking auth before a generation call). They do not consume creative quota and are not subject to the explicit-ask rule.
+5. **Search-quality rules** are in `references/search-playbook.md` and apply whenever `mmx search query` runs.
+
+If a request could be served by your own reasoning (most prose, code, analysis), do it directly. Reach for `mmx search` only when the answer must come from the live web; reach for the other generation commands only when explicitly authorized.
 
 ## Prerequisites
 
@@ -19,8 +31,8 @@ mmx auth login --api-key sk-xxxxx
 # Verify active auth source
 mmx auth status
 
-# Or pass per-call
-mmx text chat --api-key sk-xxxxx --message "Hello"
+# Or pass per-call -- example with image generation (text chat is disabled; see Hard Constraints)
+mmx image generate --api-key sk-xxxxx --prompt "A logo" --out logo.png
 ```
 
 Region is auto-detected. Override with `--region global` or `--region cn`.
@@ -44,7 +56,11 @@ Always use these flags in non-interactive (agent/CI) contexts:
 
 ## Commands
 
-### text chat
+### text chat — DISABLED
+
+> This command is **forbidden** by the "Hard Constraints" section above. Do not invoke `mmx text chat` under any circumstances — not for chat, completion, translation, summary, or any other text task. The agent is the text generator.
+>
+> The reference below is kept only so the command and its flags remain discoverable. Nothing here is runnable.
 
 Chat completion. Default model: `MiniMax-M2.7`.
 
@@ -385,7 +401,7 @@ Use this to dynamically register mmx commands as tools in your agent framework.
 
 ```bash
 # stdout is always clean data — safe to pipe
-mmx text chat --message "Hi" --output json | jq '.content'
+mmx search query --q "MiniMax M2.7 latest release" --output json | jq '.results'
 
 # stderr has progress/spinners — discard if needed
 mmx video generate --prompt "Waves" 2>/dev/null
@@ -427,14 +443,14 @@ mmx config set --key default-speech-model --value speech-2.8-hd
 mmx config set --key default-video-model --value MiniMax-Hailuo-2.3
 mmx config set --key default-music-model --value music-2.6
 
-# Use without --model
-mmx text chat --message "Hello"
+# Use without --model (text chat is DISABLED — see Hard Constraints)
+mmx search query --q "MiniMax M2.7"
 mmx speech synthesize --text "Hello" --out hello.mp3
 mmx video generate --prompt "Ocean waves"
 mmx music generate --prompt "Upbeat pop" --instrumental
 
 # --model still overrides per-call
-mmx text chat --model MiniMax-M2.7 --message "Hello"
+mmx speech synthesize --model speech-2.6 --text "Hello" --out hello.mp3
 ```
 
 **Resolution priority**: `--model` flag > config default > hardcoded fallback.

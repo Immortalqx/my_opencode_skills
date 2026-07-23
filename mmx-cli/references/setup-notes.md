@@ -25,7 +25,8 @@ mmx auth login --api-key sk-xxxxx
 Per-call auth override:
 
 ```bash
-mmx text chat --api-key sk-xxxxx --message "Hello"
+# Example with image generation (text chat is disabled — see Hard Constraints)
+mmx image generate --api-key sk-xxxxx --prompt "A logo" --out logo.png
 ```
 
 Region can be left to auto-detect or overridden with `--region global` or `--region cn`.
