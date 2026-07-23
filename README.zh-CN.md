@@ -187,12 +187,12 @@ python install-to-opencode.py --test                    # 跑单元测试
 | [`arxiv`](./arxiv/) | 搜索 arXiv、按 arXiv ID 获取论文元数据，并通过内置 arXiv Atom API 辅助脚本把 PDF 下载到本地论文库。 | 查找预印本、按查询词或 arXiv ID 下载 PDF，以及维护本地 `papers/` 或 `literature/` 论文集合。 |
 | [`doc-coauthoring`](./doc-coauthoring/) | 三阶段协作式文档写作工作流：上下文收集 → 结构打磨 → 读者测试。 | 用户要写文档、提案、PRD、设计文档等结构化内容，并希望有结构化引导。 |
 | [`docx`](./docx/) | 通过内置 docx-js helpers 和 unpack/pack 脚本创建、读取、编辑和操作 Word 文档。 | 任何 .docx 相关任务：报告、备忘录、信函、tracked changes、评论，或从中抽取内容。 |
-| [`drawio-diagram`](./drawio-diagram/) | 面向科研图示的 draw.io 工作流：生成可编辑 `.drawio` 草稿，导出 PNG/SVG/PDF，并在 PNG 上执行视觉 QA。 | 论文配图、海报、演示文稿视觉稿、概念图，尤其适合需要保留可编辑 draw.io 文件的场景。 |
+| [`drawio-diagram`](./drawio-diagram/) | 面向科研图示的 draw.io 工作流：生成可编辑 `.drawio` 草稿，导出 PNG（带 60s 硬超时），并在 PNG 上执行视觉 QA。 | 论文配图、海报、演示文稿视觉稿、概念图，尤其适合需要保留可编辑 draw.io 文件的场景。 |
 | [`figure-description`](./figure-description/) | 专利附图处理工作流：识别图中部件、分配附图标记，并生成正式附图说明。 | 根据本地技术图准备 CN/US/EP 专利附图说明和附图标记索引。 |
 | [`phd-figure-designer`](./phd-figure-designer/) | 技术论文三张承重图（Motivated Example、Solution Overview、Experimental Results）的设计顾问。 | 用户想要对 Figure 1 设计、Solution Overview 框图或实验结果图的布局给出反馈。 |
 | [`formula-derivation`](./formula-derivation/) | 研究公式推导工作流：澄清假设，并区分恒等式、命题、近似和解释。 | 把杂乱理论笔记整理成内部推导笔记、论文风格理论草稿或 blocker report。 |
 | [`grant-proposal`](./grant-proposal/) | 从研究 idea 和文献材料撰写结构化基金申请书，支持机构特定格式和通用格式。 | 把研究方向转成包含研究目标、里程碑、可行性和预期成果的 funding application。 |
-| [`mmx-cli`](./mmx-cli/) | MiniMax CLI skill，用本地 `mmx` 命令执行文本、搜索、视觉、额度、文件和多媒体任务。 | 直接调用本地已配置好的 MiniMax CLI，尤其适合中英文混合多次搜索，以及 `--quiet`、`--output json`、`--non-interactive` 的非交互式工作流。 |
+| [`mmx-cli`](./mmx-cli/) | MiniMax CLI skill，用本地 `mmx` 命令执行搜索、视觉、额度、文件和多媒体任务。`mmx text chat` 已禁用。 | 直接调用本地已配置好的 MiniMax CLI，尤其适合中英文混合多次搜索，以及 `--quiet`、`--output json`、`--non-interactive` 的非交互式工作流。 |
 | [`mock-review`](./mock-review/) | 给论文作者使用的模拟审稿工作流：调研 venue 要求、检查稿件 PDF、研究相关工作并生成模拟审稿意见。 | 投稿前风险排查、rebuttal 准备、论文修改前的 reviewer-style critique。 |
 | [`novelty-check`](./novelty-check/) | 研究 idea 查新工具：抽取核心 claim，检索文献，对比 closest prior work，并报告 novelty 风险。 | 在投入实现时间前检查一个方法是否看起来已经被做过。 |
 | [`paper-reading`](./paper-reading/) | 深度批判性单篇论文阅读工作流：产出结构化阅读笔记（问题类、设计选择、benchmark、相关工作、综合判断），带裁剪过的图和编号引用。 | 深入、批判性地读懂一篇科研论文；不适合一段话概览，也不适合大范围综述。 |
