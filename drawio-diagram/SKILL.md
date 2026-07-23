@@ -1,6 +1,6 @@
 ---
 name: drawio-diagram
-description: Use when creating research figures, paper posters, academic presentation visuals, or conceptual diagrams as an editable draw.io/diagrams.net draft plus PNG/SVG/PDF exports that pass strict visual QA. Especially for paper figures or posters where the user wants the agent to read source materials, reuse extracted paper images or plots, and produce editable draw.io/SVG/PDF assets that the user can keep editing directly in draw.io.
+description: Use when creating research figures, paper posters, academic presentation visuals, or conceptual diagrams as an editable draw.io/diagrams.net draft plus PNG export that passes strict visual QA. Especially for paper figures or posters where the user wants the agent to read source materials, reuse extracted paper images or plots, and produce an editable draw.io draft + PNG export the user can keep editing directly in draw.io. Cross-platform (Windows, macOS, Linux). PNG export has a hard 60s timeout.
 ---
 
 # Draw.io Research Figure Pipeline
@@ -9,7 +9,7 @@ description: Use when creating research figures, paper posters, academic present
 
 This skill produces research visuals as a single deliverable:
 
-1. An editable, readable `.drawio` draft plus SVG/PDF/PNG exports that pass strict visual QA.
+1. An editable, readable `.drawio` draft plus one PNG export that passes strict visual QA. SVG/PDF are not exported (they cause unpredictable hangs in headless drawio).
 
 The draw.io draft is not disposable. It must be good enough for the user to keep editing directly in draw.io and to use as a paper or poster figure on its own.
 
@@ -19,9 +19,10 @@ Do not declare a figure ready until all gates pass:
 
 1. **Asset gate:** If the task is based on a paper, poster, PDF, slides, Markdown notes, or experiment folder, inspect available figures/images/tables first and reuse useful visual assets instead of redrawing everything from scratch. This is mandatory, not optional.
 2. **Editable draft gate:** Produce a `.drawio` that is meaningful and editable by itself. The user must be able to continue editing it in draw.io.
-3. **Export gate:** Export PNG/SVG/PDF from the `.drawio`.
-4. **Visual QA gate:** Open the exported PNG and inspect it visually. If text is clipped, occluded, distorted, overlapped, unreadable, misaligned, too small, or blocked by icons/shapes, fix the `.drawio`, re-export, and inspect again.
-5. **No-blind-export gate:** Never say the PNG is ready just because files exist. The visual preview must be checked.
+3. **Discovery gate:** Verify the drawio CLI is installed and locatable on this host. If not found, run the discovery script and surface install instructions (do not silently fail).
+4. **Export gate:** Export PNG from the `.drawio` with a hard 60s timeout. SVG/PDF exports are intentionally skipped — headless drawio frequently hangs on those, and the PNG is sufficient for visual QA.
+5. **Visual QA gate:** Open the exported PNG and inspect it visually. If text is clipped, occluded, distorted, overlapped, unreadable, misaligned, too small, or blocked by icons/shapes, fix the `.drawio`, re-export, and inspect again.
+6. **No-blind-export gate:** Never say the PNG is ready just because files exist. The visual preview must be checked.
 
 If any gate fails, repair the draw.io draft first. Do not declare the figure ready.
 
@@ -30,6 +31,40 @@ For research posters and paper figures, the asset gate must produce an `asset_ma
 ## Privacy Rule
 
 Never store API keys, tokens, auth JSON contents, private URLs, or user secrets inside the skill or generated figure files. Scripts may read credentials at runtime from environment variables or existing local auth files, but must not print them.
+
+## Discovery & Setup
+
+The drawio CLI must be present on the host before any export. This skill is cross-platform: Windows uses PowerShell scripts, macOS and Linux use bash scripts. The skill ships two discovery helpers and two exporters that share the same lookup logic.
+
+### Mandatory preflight
+
+Before invoking the exporter, run the discovery script for this host. If it returns a non-zero status, surface the install hint to the user — do not silently fall back to other skills, and do not hand back a stub PNG.
+
+| Host | Discovery | Exporter |
+|---|---|---|
+| Windows | `@@SKILL_DIR@@/scripts/find_drawio.ps1` | `@@SKILL_DIR@@/scripts/export_drawio.ps1` |
+| macOS / Linux | `bash @@SKILL_DIR@@/scripts/find_drawio.sh` | `bash @@SKILL_DIR@@/scripts/export_drawio.sh` |
+
+### Lookup order (all scripts)
+
+1. `$DRAWIO_EXE` environment variable (absolute path to the drawio binary).
+2. `PATH` lookup via the platform-native command (`Get-Command` / `command -v`).
+3. Per-OS common install locations (see script sources for the full list).
+4. For Linux, a best-effort AppImage scan under `$HOME` and `/opt`.
+5. For Windows, a best-effort scan under `%LOCALAPPDATA%\Microsoft\WinGet\Packages`.
+
+### Installing drawio
+
+If the discovery script exits non-zero, install drawio via the host's package manager and re-run discovery:
+
+| Platform | Install command | Notes |
+|---|---|---|
+| Windows | `winget install drawio` or `choco install drawio` or download from https://www.drawio.com/ | Installer places `draw.io.exe` in `%LOCALAPPDATA%\Programs\draw.io\`. |
+| macOS | `brew install --cask drawio` or download `.dmg` from https://www.drawio.com/ | Binary lives inside the `.app` bundle; the discovery script handles it. |
+| Ubuntu / Debian | Download AppImage from https://www.drawio.com/ and `chmod +x`, **or** `sudo snap install drawio` | Recommended path: put the AppImage in `~/.local/bin/` and symlink as `drawio`. |
+| Other Linux | `yay -S drawio` (Arch), `flatpak install drawio` | Same logic — the script's PATH and AppImage scan will pick them up. |
+
+If installation is impossible, ask the user to confirm an alternative path or hand back the editable `.drawio` only (no PNG, no claim of completion).
 
 ## Default Output Folder
 
@@ -42,9 +77,7 @@ image_draft/
   assets/                  # extracted paper images, plots, screenshots
   asset_manifest.md        # inventory of usable source visuals
   sketch.drawio            # editable semantic draft
-  sketch.png               # visual QA preview
-  sketch.svg               # editable/vector export
-  sketch.pdf               # paper/poster export
+  sketch.png               # visual QA preview (the only raster export)
   qa_notes.md              # visual QA checklist and fixes
 ```
 
@@ -125,7 +158,9 @@ Only after every item passes may the figure be declared ready.
 
 ## Export
 
-Use `@@SKILL_DIR@@/scripts/export_drawio.ps1` when possible:
+Exports **PNG only**, with a **hard 60s timeout**. SVG and PDF exports are deliberately omitted — headless drawio frequently hangs on those, and the PNG is sufficient for visual QA of the raster preview. The editable `.drawio` stays the source of truth. Override the timeout via `-TimeoutSeconds` (PowerShell) or `-t` (bash) when justified.
+
+### Windows (PowerShell)
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File "@@SKILL_DIR@@/scripts/export_drawio.ps1" `
@@ -133,14 +168,49 @@ powershell -ExecutionPolicy Bypass -File "@@SKILL_DIR@@/scripts/export_drawio.ps
   -OutDir "<image_draft>"
 ```
 
-The exported PNG is the visual QA preview. Embedded draw.io metadata can create very large PNG text chunks, so the provided export script leaves PNG diagram embedding off by default. Keep the editable `.drawio` as the source of truth. Use `-EmbedPngDiagram` only when a self-contained editable PNG is explicitly needed.
+Flags:
+
+| Flag | Default | Notes |
+|---|---|---|
+| `-DrawioPath` | required | Input `.drawio` file. |
+| `-OutDir` | input's directory | Where the PNG is written. |
+| `-Scale` | `1.5` | PNG render scale. |
+| `-TimeoutSeconds` | `60` | Hard kill after this many seconds. Exit code `5` on timeout. |
+| `-DrawioExe` | auto-discovered | Explicit path to `draw.io.exe`. |
+| `-EmbedPngDiagram` | off | Embed diagram XML inside the PNG (large output). |
+
+### macOS / Linux (bash)
+
+```bash
+bash "@@SKILL_DIR@@/scripts/export_drawio.sh" \
+  -i "<image_draft>/sketch.drawio" \
+  -o "<image_draft>"
+```
+
+Flags:
+
+| Flag | Default | Notes |
+|---|---|---|
+| `-i` | required | Input `.drawio` file. |
+| `-o` | input's directory | Where the PNG is written. |
+| `-s` | `1.5` | PNG render scale. |
+| `-t` | `60` | Hard timeout in seconds. Exit code `5` on timeout. Uses GNU `timeout` when available; otherwise runs an internal watchdog. |
+
+### Behavior on timeout
+
+If the export exceeds the timeout, the exporter kills the drawio process, deletes any partial PNG, and exits with code `5`. The agent should report timeout as a hard failure and either re-export with `-TimeoutSeconds` / `-t` raised, or hand back the editable `.drawio` only and explicitly flag that visual QA could not run.
+
+### Discovered locations
+
+Both exporters read `$DRAWIO_EXE` first, then search PATH and common install locations (see "Discovery & Setup" above). On Linux the AppImage is auto-discovered under `$HOME` and `/opt`.
 
 ## Final Response
 
 Report:
 
-- `.drawio`, `.svg`, `.pdf`, `.png`, and `qa_notes.md` paths.
+- `.drawio`, `.png`, and `qa_notes.md` paths.
 - Whether source figures/images were reused.
 - Whether visual QA passed.
+- Whether the PNG export completed within the 60s timeout budget (if it timed out, say so explicitly).
 
 If visual QA did not pass, stop and report that the figure is not ready and describe what was fixed in the latest iteration.
